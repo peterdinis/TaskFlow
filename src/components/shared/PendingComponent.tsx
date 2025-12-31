@@ -37,5 +37,3 @@ export function PendingComponent() {
     </div>
   )
 }
-
-// Error Component

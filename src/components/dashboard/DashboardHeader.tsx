@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Menu, Search, Bell} from 'lucide-react';
+import { ModeToggle } from '../shared/ModeToggle';
 
 interface DashboardHeaderProps {
   projectName: string;
@@ -47,6 +48,7 @@ export function DashboardHeader({
         </div>
 
         <div className="flex items-center gap-1">
+          <ModeToggle />
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Search as SearchIcon, Clock, Calendar, Tag, CheckCircle, Hash, ArrowUpRight } from 'lucide-react';
+import { X, Search as SearchIcon, Calendar, Tag, CheckCircle, Hash, ArrowUpRight } from 'lucide-react';
 import { Task } from '@/types/task';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Command, CommandInput} from '@/components/ui/command';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,7 +51,7 @@ export function SearchModal({
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = task.title.toLowerCase().includes(query.toLowerCase()) ||
                          task.description?.toLowerCase().includes(query.toLowerCase()) ||
-                         task.tags?.some(tag => tag.toLowerCase().includes(query.toLowerCase()));
+                         task.tags?.some((tag: string) => tag.toLowerCase().includes(query.toLowerCase()));
     
     const matchesCategory = selectedCategory === 'all' || 
                            (selectedCategory === 'open' && !task.completed) ||

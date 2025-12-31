@@ -4,10 +4,10 @@ import { DashboardSidebar } from "./DashboardSidebar";
 import { motion } from 'framer-motion';
 import { DashboardHeader } from "./DashboardHeader";
 import { DashboardStats } from "./DashboardStats";
-import { TaskList } from "../tasks/TaksList";
 import { AddTaskButton } from "../tasks/AddTaskButton";
 import { NotificationsModal } from "../modals/NotificationModal";
 import { SearchModal } from "../modals/SearchModal";
+import { TaskList } from "../tasks/TaskList";
 
 const DashboardWrapper: FC = () => {
     const {

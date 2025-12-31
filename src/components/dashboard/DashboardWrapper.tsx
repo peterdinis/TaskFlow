@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { DashboardHeader } from "./DashboardHeader";
 import { DashboardStats } from "./DashboardStats";
 import { TaskList } from "../tasks/TaksList";
+import { AddTaskButton } from "../tasks/AddTaskButton";
+import { NotificationsModal } from "../modals/NotificationModal";
 
 const DashboardWrapper: FC = () => {
     const {
@@ -74,6 +76,13 @@ const DashboardWrapper: FC = () => {
                     </div>
                 </div>
             </motion.main>
+
+            <AddTaskButton onAdd={addTask} />
+
+            <NotificationsModal
+                isOpen={notificationsOpen}
+                onClose={() => setNotificationsOpen(false)}
+            />
         </div>
     )
 }

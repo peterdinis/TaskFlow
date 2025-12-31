@@ -7,6 +7,7 @@ import { DashboardStats } from "./DashboardStats";
 import { TaskList } from "../tasks/TaksList";
 import { AddTaskButton } from "../tasks/AddTaskButton";
 import { NotificationsModal } from "../modals/NotificationModal";
+import { SearchModal } from "../modals/SearchModal";
 
 const DashboardWrapper: FC = () => {
     const {
@@ -78,6 +79,24 @@ const DashboardWrapper: FC = () => {
             </motion.main>
 
             <AddTaskButton onAdd={addTask} />
+
+            <SearchModal
+                isOpen={searchOpen}
+                onClose={() => setSearchOpen(false)}
+                tasks={tasks}
+                onSelectTask={(id) => {
+                    console.log('Selected task:', id);
+                }}
+            />
+
+            <SearchModal
+                isOpen={searchOpen}
+                onClose={() => setSearchOpen(false)}
+                tasks={tasks}
+                onSelectTask={(id) => {
+                    console.log('Selected task:', id);
+                }}
+            />
 
             <NotificationsModal
                 isOpen={notificationsOpen}

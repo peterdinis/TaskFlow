@@ -6,7 +6,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Project } from '@/types/task';
 
-interface SidebarProps {
+interface DashboardSidebarProps {
   projects: Project[];
   activeProject: string;
   onSelectProject: (id: string) => void;
@@ -29,7 +29,7 @@ const quickLinks = [
   { id: 'trash', name: 'Trash', icon: Trash2, color: 'hsl(0, 60%, 50%)' },
 ];
 
-export function Sidebar({
+export function DashboardSidebar({
   projects,
   activeProject,
   onSelectProject,
@@ -37,7 +37,7 @@ export function Sidebar({
   onToggle,
   onOpenNotifications,
   notificationCount = 2,
-}: SidebarProps) {
+}: DashboardSidebarProps) {
   const mainProjects = projects.filter((p) => p.id === 'inbox' || p.id === 'today');
   const userProjects = projects.filter((p) => p.id !== 'inbox' && p.id !== 'today');
 
@@ -61,11 +61,15 @@ export function Sidebar({
         }}
         transition={{ type: 'spring', stiffness: 400, damping: 35 }}
         className={cn(
-          'fixed lg:relative h-full bg-sidebar border-r border-sidebar-border z-40 overflow-hidden',
-          'flex flex-col'
+          'fixed lg:relative h-screen bg-sidebar border-r border-sidebar-border z-40 overflow-hidden',
+          'flex flex-col shadow-lg'
         )}
+        style={{
+          height: '100vh',
+          maxHeight: '100vh',
+        }}
       >
-        <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
+        <div className="flex items-center justify-between p-4 border-b border-sidebar-border flex-shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-semibold text-sm">T</span>
@@ -82,7 +86,7 @@ export function Sidebar({
           </motion.button>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-accent scrollbar-track-transparent">
           {/* Notifications button */}
           <motion.button
             initial={{ opacity: 0, x: -20 }}
@@ -119,6 +123,7 @@ export function Sidebar({
                     : 'text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                 )}
               >
+                <Icon className="w-4 h-4" />
                 <span className="truncate">{project.name}</span>
               </motion.button>
             );
@@ -181,7 +186,7 @@ export function Sidebar({
           ))}
         </nav>
 
-        <div className="p-3 border-t border-sidebar-border">
+        <div className="p-3 border-t border-sidebar-border flex-shrink-0">
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}

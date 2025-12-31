@@ -3,6 +3,7 @@ import { FC, useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { motion } from 'framer-motion';
 import { DashboardHeader } from "./DashboardHeader";
+import { DashboardStats } from "./DashboardStats";
 
 const DashboardWrapper: FC = () => {
     const {
@@ -47,6 +48,20 @@ const DashboardWrapper: FC = () => {
                     onOpenNotifications={() => setNotificationsOpen(true)}
                     notificationCount={2}
                 />
+                <div className="flex-1 overflow-y-auto">
+                    <DashboardStats
+                        totalTasks={taskCount.total}
+                        completedTasks={taskCount.completed}
+                        highPriorityCount={highPriorityCount}
+                    />
+
+                    <div className="mb-4">
+                        <h2 className="text-lg font-semibold text-foreground mb-1">Tasks</h2>
+                        <p className="text-sm text-muted-foreground">
+                            Manage your tasks and stay productive
+                        </p>
+                    </div>
+                </div>
             </motion.main>
         </div>
     )

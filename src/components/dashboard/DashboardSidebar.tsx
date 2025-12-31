@@ -74,7 +74,7 @@ export function DashboardSidebar({
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-semibold text-sm">T</span>
             </div>
-            <span className="font-semibold text-sidebar-foreground">Todoist</span>
+            <span className="font-semibold text-sidebar-foreground">TaskFlow</span>
           </div>
           <motion.button
             whileHover={{ scale: 1.1 }}

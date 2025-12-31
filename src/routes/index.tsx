@@ -4,6 +4,6 @@ export const Route = createFileRoute('/')({ component: App })
 
 function App() {
   return (
-    <>TaskFlow</>
+    <>TaskFlow HOME</>
   )
 }

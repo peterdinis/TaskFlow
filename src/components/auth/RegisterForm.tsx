@@ -1,9 +1,7 @@
 import { FC } from "react";
 
 const RegisterForm: FC = () => {
-    return (
-        <></>
-    )
-}
+	return <></>;
+};
 
-export default RegisterForm
+export default RegisterForm;

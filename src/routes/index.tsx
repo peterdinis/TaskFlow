@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, useCallback, useMemo, Suspense, lazy } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'framer-motion';
 import { useNavigate } from '@tanstack/react-router';
 import {
   ArrowRight, Sparkles, Check, Star, Users, Zap, Shield, Globe,
-  BarChart, Bell, Calendar, Clock, Folder, Target, TrendingUp,
-  ChevronRight, Play, Github, Twitter, Linkedin, Menu, X,
-  Award, Lock, Cloud, Smartphone, Heart, Rocket
+  BarChart, Bell, Clock, Target,
+  Play, Github, Twitter, Linkedin, Menu, X,
+  Award, Cloud, Smartphone, Heart, Rocket
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { createFileRoute } from '@tanstack/react-router';
 import { useDebounceCallback } from '@react-hook/debounce';
-import { AnimatedLoader } from '@/components/shared/AnimatedComponent';
 import { PendingComponent } from '@/components/shared/PendingComponent';
 
 // Mock stats
@@ -230,6 +229,59 @@ const OptimizedImage = ({
   );
 };
 
+// Server-safe animated background component
+const AnimatedBackground = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {/* Static fallback for SSR */}
+        {[...Array(10)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-primary/20 rounded-full"
+            style={{
+              left: `${(i * 10) % 100}%`,
+              top: `${(i * 15) % 100}%`,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      {[...Array(10)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 bg-primary/20 rounded-full"
+          style={{
+            willChange: 'transform, opacity',
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+          }}
+          animate={{
+            y: [null, -20, 20, -10],
+            opacity: [0.2, 0.5, 0.2],
+          }}
+          transition={{
+            duration: 3 + Math.random() * 2,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+            ease: "linear"
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 function LandingPage() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -283,33 +335,6 @@ function LandingPage() {
     }
   }, []);
 
-  // Memoizovaný animated background
-  const animatedBackground = useMemo(() => (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {[...Array(10)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 bg-primary/20 rounded-full"
-          style={{
-            willChange: 'transform, opacity',
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-          }}
-          animate={{
-            y: [null, -20, 20, -10],
-            opacity: [0.2, 0.5, 0.2],
-          }}
-          transition={{
-            duration: 3 + Math.random() * 2,
-            repeat: Infinity,
-            delay: Math.random() * 2,
-            ease: "linear"
-          }}
-        />
-      ))}
-    </div>
-  ), []);
-
   // Memoizované footer sekcie
   const footerSections = useMemo(() => [
     {
@@ -328,103 +353,134 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
-      {animatedBackground}
+      <AnimatedBackground />
 
-      {/* Header */}
-      <motion.header
-        style={{
-          opacity: headerOpacity,
-          backgroundColor: headerBackground,
-          backdropFilter: 'blur(10px)',
-          willChange: 'transform, opacity, background-color',
-        }}
-        className="fixed top-0 left-0 right-0 z-50 border-b border-border/50"
-      >
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', delay: 0.1 }}
-                className="w-8 h-8 rounded-lg bg-gradient-to-r from-primary to-primary/60 flex items-center justify-center"
-                style={{ willChange: 'transform' }}
-              >
-                <span className="text-primary-foreground font-bold text-sm">TF</span>
-              </motion.div>
-              <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                TaskFlow
-              </span>
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
-              {['Features', 'Pricing', 'Testimonials'].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => scrollToSection(item.toLowerCase())}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      {/* Header - conditional rendering for SSR */}
+      {typeof window !== 'undefined' ? (
+        <motion.header
+          style={{
+            opacity: headerOpacity,
+            backgroundColor: headerBackground,
+            backdropFilter: 'blur(10px)',
+            willChange: 'transform, opacity, background-color',
+          }}
+          className="fixed top-0 left-0 right-0 z-50 border-b border-border/50"
+        >
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', delay: 0.1 }}
+                  className="w-8 h-8 rounded-lg bg-gradient-to-r from-primary to-primary/60 flex items-center justify-center"
+                  style={{ willChange: 'transform' }}
                 >
-                  {item}
+                  <span className="text-primary-foreground font-bold text-sm">TF</span>
+                </motion.div>
+                <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  TaskFlow
+                </span>
+              </div>
+
+              {/* Desktop Navigation */}
+              <nav className="hidden md:flex items-center gap-8">
+                {['Features', 'Pricing', 'Testimonials'].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => scrollToSection(item.toLowerCase())}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </nav>
+
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  onClick={handleLogin}
+                  className="hidden sm:inline-flex"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  onClick={handleGetStarted}
+                  className="gap-2"
+                >
+                  Get Started Free
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="md:hidden p-2"
+                >
+                  {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
-              ))}
-            </nav>
-
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                onClick={handleLogin}
-                className="hidden sm:inline-flex"
-              >
-                Sign In
-              </Button>
-              <Button
-                onClick={handleGetStarted}
-                className="gap-2"
-              >
-                Get Started Free
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden p-2"
-              >
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-border bg-background/95 backdrop-blur-lg"
-            >
-              <div className="container mx-auto px-4 py-4">
-                <div className="flex flex-col gap-4">
-                  {['Features', 'Pricing', 'Testimonials'].map((item) => (
-                    <button
-                      key={item}
-                      onClick={() => scrollToSection(item.toLowerCase())}
-                      className="py-2 text-left font-medium hover:text-primary transition-colors"
-                    >
-                      {item}
-                    </button>
-                  ))}
-                  <Button variant="outline" onClick={handleLogin} className="mt-2">
-                    Sign In
-                  </Button>
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="md:hidden border-t border-border bg-background/95 backdrop-blur-lg"
+              >
+                <div className="container mx-auto px-4 py-4">
+                  <div className="flex flex-col gap-4">
+                    {['Features', 'Pricing', 'Testimonials'].map((item) => (
+                      <button
+                        key={item}
+                        onClick={() => scrollToSection(item.toLowerCase())}
+                        className="py-2 text-left font-medium hover:text-primary transition-colors"
+                      >
+                        {item}
+                      </button>
+                    ))}
+                    <Button variant="outline" onClick={handleLogin} className="mt-2">
+                      Sign In
+                    </Button>
+                  </div>
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.header>
+      ) : (
+        // Static header for SSR
+        <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur-lg">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-primary to-primary/60 flex items-center justify-center">
+                  <span className="text-primary-foreground font-bold text-sm">TF</span>
+                </div>
+                <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  TaskFlow
+                </span>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.header>
+
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  className="hidden sm:inline-flex"
+                >
+                  Sign In
+                </Button>
+                <Button className="gap-2">
+                  Get Started Free
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </header>
+      )}
 
       <Suspense fallback={
         <div className="min-h-screen flex items-center justify-center">
@@ -597,11 +653,11 @@ function LandingPage() {
                     style={{ willChange: 'transform' }}
                   >
                     <div className={cn(
-                      "h-full p-6 rounded-2xl border border-border bg-card optimized-shadow",
+                      "h-full p-6 rounded-2xl border border-border bg-card",
                       "group-hover:shadow-xl group-hover:border-primary/20 transition-all"
                     )}>
                       <div className={cn(
-                        "w-12 h-12 rounded-xl mb-6 flex items-center justify-center optimized-gradient",
+                        "w-12 h-12 rounded-xl mb-6 flex items-center justify-center",
                         "bg-gradient-to-br",
                         feature.color
                       )}>
@@ -672,7 +728,7 @@ function LandingPage() {
                 <AnimatedSection key={testimonial.name} delay={index * 0.1}>
                   <motion.div
                     whileHover={{ y: -5 }}
-                    className="bg-card border border-border rounded-2xl p-6 optimized-shadow"
+                    className="bg-card border border-border rounded-2xl p-6"
                     style={{ willChange: 'transform' }}
                   >
                     <div className="flex items-center gap-3 mb-4">
@@ -724,7 +780,7 @@ function LandingPage() {
                   <motion.div
                     whileHover={{ y: -5 }}
                     className={cn(
-                      "relative border-2 rounded-2xl p-8 optimized-shadow",
+                      "relative border-2 rounded-2xl p-8",
                       plan.color,
                       plan.popular && "ring-2 ring-primary/20 shadow-xl"
                     )}

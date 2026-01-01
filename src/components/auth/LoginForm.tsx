@@ -1,9 +1,7 @@
 import { FC } from "react";
 
 const LoginForm: FC = () => {
-    return (
-        <></>
-    )
-}
+	return <></>;
+};
 
-export default LoginForm
+export default LoginForm;

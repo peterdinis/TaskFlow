@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
+import { AuthProvider } from "@/context/AuthContext";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -58,19 +59,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 						enableSystem
 						disableTransitionOnChange
 					>
-						{children}
-						<TanStackDevtools
-							config={{
-								position: "bottom-right",
-							}}
-							plugins={[
-								{
-									name: "Tanstack Router",
-									render: <TanStackRouterDevtoolsPanel />,
-								},
-								TanStackQueryDevtools,
-							]}
-						/>
+						<AuthProvider>
+							{children}
+							<TanStackDevtools
+								config={{
+									position: "bottom-right",
+								}}
+								plugins={[
+									{
+										name: "Tanstack Router",
+										render: <TanStackRouterDevtoolsPanel />,
+									},
+									TanStackQueryDevtools,
+								]}
+							/>
+						</AuthProvider>
 					</ThemeProvider>
 				</ConvexProvider>
 				<Scripts />

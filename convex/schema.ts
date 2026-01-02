@@ -2,6 +2,37 @@ import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
 
 export default defineSchema({
+    users: defineTable({
+        email: v.string(),
+        name: v.optional(v.string()),
+        passwordHash: v.string(),
+        role: v.string(),
+        createdAt: v.number(),
+        updatedAt: v.number(),
+        lastLogin: v.optional(v.number()),
+        isActive: v.boolean(),
+    })
+        .index("by_email", ["email"])
+        .index("by_created", ["createdAt"]),
+
+    sessions: defineTable({
+        userId: v.id("users"),
+        sessionToken: v.string(),
+        expiresAt: v.number(),
+        userAgent: v.optional(v.string()),
+        ipAddress: v.optional(v.string()),
+    })
+        .index("by_session_token", ["sessionToken"])
+        .index("by_user_id", ["userId"]),
+
+    passwordResets: defineTable({
+        userId: v.id("users"),
+        token: v.string(),
+        expiresAt: v.number(),
+        used: v.boolean(),
+    })
+        .index("by_token", ["token"])
+        .index("by_user_id", ["userId"]),
     todos: defineTable({
         userId: v.id("users"),
         projectId: v.id("projects"),

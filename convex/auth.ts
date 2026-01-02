@@ -1,5 +1,5 @@
 import { v } from 'convex/values'
-import { mutation, query, action } from './_generated/server'
+import { mutation, query} from './_generated/server'
 import { hash, compare } from 'bcryptjs'
 
 // REGISTER USER
@@ -38,7 +38,7 @@ export const register = mutation({
 
     // Create session
     const sessionToken = crypto.randomUUID()
-    const sessionId = await ctx.db.insert('sessions', {
+    await ctx.db.insert('sessions', {
       userId,
       sessionToken,
       expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days

@@ -1,15 +1,11 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { useAuth } from '../contexts/auth-context'
-import { loginSchema, type LoginFormData } from '../lib/validations'
+import { useAuth } from '@/context/AuthContext'
+import { LoginFormData, loginSchema } from '@/schemas/authSchemas'
 
-export const Route = createFileRoute('/login')({
-  component: LoginPage,
-})
-
-function LoginPage() {
+export function LoginPage() {
   const router = useRouter()
   const auth = useAuth()
   const [error, setError] = useState('')
@@ -34,7 +30,6 @@ function LoginPage() {
 
     try {
       await auth.login(data.email, data.password, data.rememberMe)
-      // Navigácia sa spraví v auth kontexte
     } catch (err: any) {
       setError(err.message || 'Prihlasovanie zlyhalo')
     } finally {

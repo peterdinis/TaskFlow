@@ -58,12 +58,11 @@ const RegisterForm: FC = () => {
 		try {
 			await auth.register(data.name, data.email, data.password);
 			setRegistrationSuccess(true);
-			
+
 			// Automatické presmerovanie po 3 sekundách
 			setTimeout(() => {
 				router.navigate({ to: "/" });
 			}, 3000);
-			
 		} catch (err: any) {
 			setError(err.message || "Registrácia zlyhala. Skúste to prosím znova.");
 			setRegistrationSuccess(false);
@@ -96,12 +95,8 @@ const RegisterForm: FC = () => {
 	return (
 		<div className="max-w-md w-full mx-auto p-8 bg-white rounded-lg shadow-md">
 			<div className="text-center mb-8">
-				<h1 className="text-3xl font-bold text-gray-900 mb-2">
-					Vytvoriť účet
-				</h1>
-				<p className="text-gray-600">
-					Vyplňte údaje pre registráciu
-				</p>
+				<h1 className="text-3xl font-bold text-gray-900 mb-2">Vytvoriť účet</h1>
+				<p className="text-gray-600">Vyplňte údaje pre registráciu</p>
 			</div>
 
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -125,9 +120,7 @@ const RegisterForm: FC = () => {
 						/>
 					</div>
 					{errors.name && (
-						<p className="mt-1 text-sm text-red-600">
-							{errors.name.message}
-						</p>
+						<p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
 					)}
 				</div>
 
@@ -151,9 +144,7 @@ const RegisterForm: FC = () => {
 						/>
 					</div>
 					{errors.email && (
-						<p className="mt-1 text-sm text-red-600">
-							{errors.email.message}
-						</p>
+						<p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
 					)}
 				</div>
 
@@ -187,7 +178,7 @@ const RegisterForm: FC = () => {
 							)}
 						</button>
 					</div>
-					
+
 					{/* Indikátor sily hesla */}
 					{password && (
 						<div className="mt-2">
@@ -200,28 +191,44 @@ const RegisterForm: FC = () => {
 							<div className="h-2 bg-gray-200 rounded-full overflow-hidden">
 								<div
 									className={`h-full ${getStrengthColor(
-										passwordStrength()
+										passwordStrength(),
 									)} transition-all duration-300`}
 									style={{ width: `${passwordStrength()}%` }}
 								/>
 							</div>
 							<div className="mt-2 text-xs text-gray-500 space-y-1">
-								<p className={password.length >= 8 ? "text-green-600" : "text-gray-400"}>
+								<p
+									className={
+										password.length >= 8 ? "text-green-600" : "text-gray-400"
+									}
+								>
 									✓ Aspoň 8 znakov
 								</p>
-								<p className={/[A-Z]/.test(password) ? "text-green-600" : "text-gray-400"}>
+								<p
+									className={
+										/[A-Z]/.test(password) ? "text-green-600" : "text-gray-400"
+									}
+								>
 									✓ Aspoň jedno veľké písmeno
 								</p>
-								<p className={/[a-z]/.test(password) ? "text-green-600" : "text-gray-400"}>
+								<p
+									className={
+										/[a-z]/.test(password) ? "text-green-600" : "text-gray-400"
+									}
+								>
 									✓ Aspoň jedno malé písmeno
 								</p>
-								<p className={/[0-9]/.test(password) ? "text-green-600" : "text-gray-400"}>
+								<p
+									className={
+										/[0-9]/.test(password) ? "text-green-600" : "text-gray-400"
+									}
+								>
 									✓ Aspoň jedna číslica
 								</p>
 							</div>
 						</div>
 					)}
-					
+
 					{errors.password && (
 						<p className="mt-1 text-sm text-red-600">
 							{errors.password.message}
@@ -259,7 +266,7 @@ const RegisterForm: FC = () => {
 							)}
 						</button>
 					</div>
-					
+
 					{/* Indikátor zhody hesiel */}
 					{confirmPassword && password && (
 						<div className="mt-2">
@@ -276,7 +283,7 @@ const RegisterForm: FC = () => {
 							</p>
 						</div>
 					)}
-					
+
 					{errors.confirmPassword && (
 						<p className="mt-1 text-sm text-red-600">
 							{errors.confirmPassword.message}
@@ -314,9 +321,7 @@ const RegisterForm: FC = () => {
 						</span>
 					</label>
 					{errors.terms && (
-						<p className="mt-1 text-sm text-red-600">
-							{errors.terms.message}
-						</p>
+						<p className="mt-1 text-sm text-red-600">{errors.terms.message}</p>
 					)}
 				</div>
 

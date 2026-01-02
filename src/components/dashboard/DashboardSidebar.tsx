@@ -1655,7 +1655,12 @@ export function DashboardSidebar({
 																	) {
 																		onPermanentlyDelete?.(task.id);
 																	}
-												</Button>
+																}}
+																className="h-8 w-8 p-0"
+																title="Delete permanently"
+															>
+																<Delete className="w-4 h-4" />
+															</Button>
 														</div>
 													</div>
 												</motion.div>

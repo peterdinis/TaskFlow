@@ -1,24 +1,6 @@
 import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
-import { z } from 'zod'
-
-// Zod schemas for validation
-const createLabelSchema = z.object({
-  userId: z.string().nullable(),
-  name: z.string().min(1, "Label name is required").max(100, "Label name too long"),
-  type: z.enum(["user", "system"]),
-})
-
-const updateLabelSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1).max(100).optional(),
-  type: z.enum(["user", "system"]).optional(),
-})
-
-const getLabelsByTypeSchema = z.object({
-  userId: z.string().nullable(),
-  type: z.enum(["user", "system"]),
-})
+import { createLabelSchema, getLabelsByTypeSchema, updateLabelSchema } from '@/schemas/labelsSchemas'
 
 // CREATE - Add a new label
 export const createLabel = mutation({

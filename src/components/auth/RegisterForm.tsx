@@ -61,7 +61,7 @@ const RegisterForm: FC = () => {
 
 			// Automatické presmerovanie po 3 sekundách
 			setTimeout(() => {
-				router.navigate({ to: "/" });
+				router.navigate({ to: "/login" });
 			}, 3000);
 		} catch (err: any) {
 			setError(err.message || "Registrácia zlyhala. Skúste to prosím znova.");
@@ -73,7 +73,7 @@ const RegisterForm: FC = () => {
 
 	if (registrationSuccess) {
 		return (
-			<div className="max-w-md w-full mx-auto p-8 bg-white rounded-lg shadow-md">
+			<div className="max-w-md w-full mx-auto p-8 rounded-lg shadow-md">
 				<div className="text-center">
 					<div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
 						<Check className="h-6 w-6 text-green-600" />

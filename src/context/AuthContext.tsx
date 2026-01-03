@@ -6,7 +6,7 @@ import {
 	ReactNode,
 } from "react";
 import { useRouter } from "@tanstack/react-router";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Cookies from "js-cookie";
 
@@ -16,6 +16,9 @@ interface User {
 	name: string;
 	role: string;
 	createdAt: number;
+	avatar?: string;
+	isActive?: boolean;
+	lastLogin?: number;
 }
 
 interface AuthContextType {
@@ -48,10 +51,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		sessionToken: Cookies.get("session_token") || undefined,
 	});
 
-	const loginMutation = useMutation(api.auth.login);
-	const registerMutation = useMutation(api.auth.register);
+	const loginAction = useAction(api.auth.login);
+	const registerAction = useAction(api.auth.register);
 	const logoutMutation = useMutation(api.auth.logout);
-	const updateProfileMutation = useMutation(api.auth.updateProfile);
+	const updateProfileAction = useAction(api.auth.updateProfile);
 
 	const [user, setUser] = useState<User | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -68,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	const login = async (email: string, password: string, rememberMe = false) => {
 		try {
-			const result = await loginMutation({ email, password, rememberMe });
+			const result = await loginAction({ email, password, rememberMe });
 
 			// Save session token to cookies
 			Cookies.set("session_token", result.sessionToken, {
@@ -88,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	const register = async (name: string, email: string, password: string) => {
 		try {
-			const result = await registerMutation({ name, email, password });
+			const result = await registerAction({ name, email, password });
 
 			Cookies.set("session_token", result.sessionToken, {
 				expires: 30,
@@ -133,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		}
 
 		try {
-			const result = await updateProfileMutation({
+			const result = await updateProfileAction({
 				sessionToken,
 				...data,
 			});

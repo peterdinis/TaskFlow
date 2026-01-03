@@ -73,5 +73,7 @@ export default defineSchema({
         userId: v.union(v.id("users"), v.null()),
         name: v.string(),
         type: v.union(v.literal("user"), v.literal("system")),
+        color: v.optional(v.string()),
+        icon: v.optional(v.string()),
     }),
 })

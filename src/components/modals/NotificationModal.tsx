@@ -178,9 +178,12 @@ export function NotificationsModal({
 															{notification.message}
 														</p>
 														<p className="text-xs text-muted-foreground/70 mt-1">
-															{formatDistanceToNow(new Date(notification.createdAt), {
-																addSuffix: true,
-															})}
+															{formatDistanceToNow(
+																new Date(notification.createdAt),
+																{
+																	addSuffix: true,
+																},
+															)}
 														</p>
 													</div>
 												</div>

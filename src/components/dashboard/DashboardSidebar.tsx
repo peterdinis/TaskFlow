@@ -909,48 +909,6 @@ export function DashboardSidebar({
 								</div>
 							</div>
 
-							{/* Theme Settings */}
-							<div className="rounded-lg border border-border p-4">
-								<h3 className="font-medium text-lg mb-4 flex items-center gap-2">
-									<Palette className="w-5 h-5" />
-									Appearance
-								</h3>
-								<div className="space-y-3">
-									<p className="text-sm text-muted-foreground mb-3">
-										Choose your preferred theme
-									</p>
-									<div className="grid grid-cols-3 gap-3">
-										{themeOptions.map((theme) => {
-											const Icon = theme.icon;
-											return (
-												<motion.button
-													key={theme.id}
-													whileHover={{ scale: 1.02 }}
-													whileTap={{ scale: 0.98 }}
-													onClick={() => onThemeChange?.(theme.id as any)}
-													className={`
-                            flex flex-col items-center gap-3 p-4 rounded-lg border transition-all
-                            ${
-															currentTheme === theme.id
-																? "bg-primary/10 border-primary text-primary"
-																: "bg-muted/50 border-border hover:bg-muted"
-														}
-                          `}
-												>
-													<Icon className="w-6 h-6" />
-													<div className="text-center">
-														<p className="font-medium">{theme.name}</p>
-														<p className="text-xs text-muted-foreground mt-1">
-															{theme.description}
-														</p>
-													</div>
-												</motion.button>
-											);
-										})}
-									</div>
-								</div>
-							</div>
-
 							{/* Notification Settings */}
 							<div className="rounded-lg border border-border p-4">
 								<h3 className="font-medium text-lg mb-4 flex items-center gap-2">

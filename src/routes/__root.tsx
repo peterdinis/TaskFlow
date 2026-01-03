@@ -16,6 +16,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { TodoProvider } from "@/context/TodoContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -61,7 +62,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 						disableTransitionOnChange
 					>
 						<AuthProvider>
-							<TodoProvider>{children}</TodoProvider>
+							<TodoProvider>
+								<NotificationProvider>{children}</NotificationProvider>
+							</TodoProvider>
 							<TanStackDevtools
 								config={{
 									position: "bottom-right",

@@ -9,50 +9,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-
-interface Notification {
-	id: string;
-	type: "success" | "reminder" | "alert";
-	title: string;
-	message: string;
-	time: string;
-	read: boolean;
-}
-
-const initialNotifications: Notification[] = [
-	{
-		id: "1",
-		type: "success",
-		title: "Task completed",
-		message: 'You completed "Review project proposal"',
-		time: "2 min ago",
-		read: false,
-	},
-	{
-		id: "2",
-		type: "reminder",
-		title: "Upcoming deadline",
-		message: "Team meeting starts in 30 minutes",
-		time: "28 min ago",
-		read: false,
-	},
-	{
-		id: "3",
-		type: "alert",
-		title: "Overdue task",
-		message: "Buy groceries was due yesterday",
-		time: "1 day ago",
-		read: true,
-	},
-	{
-		id: "4",
-		type: "success",
-		title: "Weekly goal achieved",
-		message: "You completed 15 tasks this week!",
-		time: "2 days ago",
-		read: true,
-	},
-];
+import { useNotifications } from "@/context/NotificationContext";
+import { formatDistanceToNow } from "date-fns";
 
 interface NotificationsModalProps {
 	isOpen: boolean;
@@ -75,44 +33,32 @@ export function NotificationsModal({
 	isOpen,
 	onClose,
 }: NotificationsModalProps) {
-	const [notifications, setNotifications] =
-		useState<Notification[]>(initialNotifications);
+	const {
+		notifications,
+		unreadCount,
+		markAsRead,
+		markAllAsRead,
+		deleteNotification,
+		clearAll,
+	} = useNotifications();
 	const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
-	const unreadCount = notifications.filter((n) => !n.read).length;
-
-	const handleMarkAllAsRead = () => {
-		setNotifications((prev) =>
-			prev.map((notification) => ({
-				...notification,
-				read: true,
-			})),
-		);
+	const handleMarkAllAsRead = async () => {
+		await markAllAsRead();
 	};
 
-	const handleMarkAsRead = (id: string) => {
-		setNotifications((prev) =>
-			prev.map((notification) =>
-				notification.id === id ? { ...notification, read: true } : notification,
-			),
-		);
+	const handleMarkAsRead = async (id: string) => {
+		await markAsRead(id);
 	};
 
 	const handleDeleteNotification = async (id: string) => {
 		setIsDeleting(id);
-
-		// Simulácia animácie mazania
-		await new Promise((resolve) => setTimeout(resolve, 200));
-
-		setNotifications((prev) =>
-			prev.filter((notification) => notification.id !== id),
-		);
-
+		await deleteNotification(id);
 		setIsDeleting(null);
 	};
 
-	const handleClearAll = () => {
-		setNotifications([]);
+	const handleClearAll = async () => {
+		await clearAll();
 	};
 
 	return (
@@ -201,12 +147,12 @@ export function NotificationsModal({
 													opacity: { duration: 0.2 },
 												}}
 												onClick={() =>
-													!notification.read &&
+													!notification.isRead &&
 													handleMarkAsRead(notification.id)
 												}
 												className={cn(
 													"group relative px-5 py-4 border-b border-border hover:bg-muted/50 transition-colors cursor-pointer",
-													!notification.read && "bg-primary/5",
+													!notification.isRead && "bg-primary/5",
 													isDeletingItem && "opacity-50",
 												)}
 											>
@@ -224,7 +170,7 @@ export function NotificationsModal({
 															<p className="font-medium text-sm text-foreground">
 																{notification.title}
 															</p>
-															{!notification.read && (
+															{!notification.isRead && (
 																<div className="w-2 h-2 rounded-full bg-primary" />
 															)}
 														</div>
@@ -232,7 +178,12 @@ export function NotificationsModal({
 															{notification.message}
 														</p>
 														<p className="text-xs text-muted-foreground/70 mt-1">
-															{notification.time}
+															{formatDistanceToNow(
+																new Date(notification.createdAt),
+																{
+																	addSuffix: true,
+																},
+															)}
 														</p>
 													</div>
 												</div>
@@ -251,8 +202,7 @@ export function NotificationsModal({
 													<Trash2 className="w-3.5 h-3.5" />
 												</motion.button>
 
-												{/* Read/unread indicator */}
-												{!notification.read && (
+												{!notification.isRead && (
 													<motion.div
 														layoutId={`read-indicator-${notification.id}`}
 														className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"

@@ -23,10 +23,7 @@ import {
 	LogIn,
 	User as UserIcon,
 	LogOut,
-	Palette,
 	Bell as BellIcon,
-	Moon,
-	Sun,
 	Shield,
 	HelpCircle,
 	ExternalLink,
@@ -70,8 +67,6 @@ interface DashboardSidebarProps {
 	onToggleFavorite?: (taskId: string, isFavorite: boolean) => void;
 	onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
 	tasks?: Task[];
-	onThemeChange?: (theme: "light" | "dark" | "system") => void;
-	currentTheme?: "light" | "dark" | "system";
 }
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -97,17 +92,6 @@ const quickLinks = [
 	{ id: "trash", name: "Trash", icon: Trash2, color: "hsl(0, 60%, 50%)" },
 ];
 
-const themeOptions = [
-	{ id: "light", name: "Light", icon: Sun, description: "Use light theme" },
-	{ id: "dark", name: "Dark", icon: Moon, description: "Use dark theme" },
-	{
-		id: "system",
-		name: "System",
-		icon: Settings,
-		description: "Follow system settings",
-	},
-];
-
 export function DashboardSidebar({
 	projects,
 	activeProject,
@@ -124,8 +108,6 @@ export function DashboardSidebar({
 	onToggleFavorite,
 	onUpdateTask,
 	tasks = [],
-	onThemeChange,
-	currentTheme = "system",
 }: DashboardSidebarProps) {
 	const { user, logout } = useAuth();
 	const [showTrashDialog, setShowTrashDialog] = useState(false);

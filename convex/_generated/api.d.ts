@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as auth_internal from "../auth_internal.js";
 import type * as labels from "../labels.js";
+import type * as notifications from "../notifications.js";
 import type * as projects from "../projects.js";
 import type * as subTodos from "../subTodos.js";
 import type * as todos from "../todos.js";
@@ -25,6 +26,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   auth_internal: typeof auth_internal;
   labels: typeof labels;
+  notifications: typeof notifications;
   projects: typeof projects;
   subTodos: typeof subTodos;
   todos: typeof todos;

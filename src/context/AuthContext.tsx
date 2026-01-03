@@ -1,4 +1,3 @@
-// app/contexts/auth-context.tsx
 import {
 	createContext,
 	useContext,
@@ -54,12 +53,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	const logoutMutation = useMutation(api.auth.logout);
 	const updateProfileMutation = useMutation(api.auth.updateProfile);
 
-	const [user] = useState<User | null>(null);
+	const [user, setUser] = useState<User | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 
 	// Sync user from query
 	useEffect(() => {
 		setIsLoading(userQuery === undefined);
+		if (userQuery) {
+			setUser(userQuery as User);
+		} else if (userQuery === null) {
+			setUser(null);
+		}
 	}, [userQuery]);
 
 	const login = async (email: string, password: string, rememberMe = false) => {

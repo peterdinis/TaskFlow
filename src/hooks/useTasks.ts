@@ -6,6 +6,7 @@ export function useTasks() {
 	const {
 		filteredTasks,
 		projects,
+		labels,
 		activeProject,
 		setActiveProject,
 		addTodo,
@@ -16,16 +17,24 @@ export function useTasks() {
 	} = useTodo();
 
 	const addTask = useCallback(
-		async (title: string, priority: Priority = "none") => {
+		async (data: {
+			title: string;
+			description?: string;
+			priority?: Priority;
+			dueDate?: Date;
+			tags?: string[];
+			projectId?: string;
+		}) => {
 			await addTodo({
-				taskName: title,
-				projectId: activeProject === "today" ? "inbox" : activeProject,
-				labelId: "none", // Default label if not specified
-				dueDate: Date.now(),
-				priority: priority as any,
+				taskName: data.title,
+				description: data.description,
+				projectId: data.projectId,
+				dueDate: data.dueDate?.getTime() || Date.now(),
+				priority: data.priority as any,
+				tags: data.tags,
 			});
 		},
-		[addTodo, activeProject],
+		[addTodo],
 	);
 
 	const updateTaskPriority = useCallback(
@@ -45,6 +54,7 @@ export function useTasks() {
 	return {
 		tasks: filteredTasks as unknown as Task[],
 		projects: projects as unknown as Project[],
+		labels,
 		activeProject,
 		setActiveProject,
 		addTask,

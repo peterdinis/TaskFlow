@@ -832,7 +832,9 @@ export function DashboardSidebar({
 							)}
 
 							<div className="text-xs text-muted-foreground">
-								<p>Member since: {user ? formatJoinDate(user.createdAt) : "N/A"}</p>
+								<p>
+									Member since: {user ? formatJoinDate(user.createdAt) : "N/A"}
+								</p>
 								<p>Last updated: {format(new Date(), "MMM d, yyyy")}</p>
 							</div>
 						</div>
@@ -885,9 +887,12 @@ export function DashboardSidebar({
 												</Badge>
 											)}
 										</div>
-										<p className="text-sm text-muted-foreground">{user?.email}</p>
+										<p className="text-sm text-muted-foreground">
+											{user?.email}
+										</p>
 										<p className="text-xs text-muted-foreground mt-1">
-											Member since: {user ? formatJoinDate(user.createdAt) : "N/A"}
+											Member since:{" "}
+											{user ? formatJoinDate(user.createdAt) : "N/A"}
 										</p>
 									</div>
 									<Button

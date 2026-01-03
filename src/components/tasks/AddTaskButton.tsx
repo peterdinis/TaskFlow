@@ -251,7 +251,7 @@ export function AddTaskButton({
 													value={description}
 													onChange={(e) => setDescription(e.target.value)}
 													placeholder="Add description..."
-													className="w-full min-h-[80px] bg-transparent text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg p-3 resize-none outline-none focus:ring-1 focus:ring-primary"
+													className="w-full min-h-20 bg-transparent text-sm text-foreground placeholder:text-muted-foreground border border-border rounded-lg p-3 resize-none outline-none focus:ring-1 focus:ring-primary"
 												/>
 											</div>
 

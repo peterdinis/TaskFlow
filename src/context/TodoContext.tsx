@@ -213,7 +213,9 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 		return await createTodoMutation({
 			...data,
 			userId: user.id as Id<"users">,
-			projectId: data.projectId ? (data.projectId as Id<"projects">) : undefined,
+			projectId: data.projectId
+				? (data.projectId as Id<"projects">)
+				: undefined,
 			labelId: data.labelId ? (data.labelId as Id<"labels">) : undefined,
 			isCompleted: false,
 			priority: data.priority ? reversePriority(data.priority) : 0,

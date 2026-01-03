@@ -61,9 +61,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 						disableTransitionOnChange
 					>
 						<AuthProvider>
-							<TodoProvider>
-								{children}
-							</TodoProvider>
+							<TodoProvider>{children}</TodoProvider>
 							<TanStackDevtools
 								config={{
 									position: "bottom-right",

@@ -930,9 +930,10 @@ export function DashboardSidebar({
 													onClick={() => onThemeChange?.(theme.id as any)}
 													className={`
                             flex flex-col items-center gap-3 p-4 rounded-lg border transition-all
-                            ${currentTheme === theme.id
-															? "bg-primary/10 border-primary text-primary"
-															: "bg-muted/50 border-border hover:bg-muted"
+                            ${
+															currentTheme === theme.id
+																? "bg-primary/10 border-primary text-primary"
+																: "bg-muted/50 border-border hover:bg-muted"
 														}
                           `}
 												>
@@ -1181,7 +1182,7 @@ export function DashboardSidebar({
 																	className={cn(
 																		"font-medium text-foreground line-clamp-1 flex-1",
 																		task.completed &&
-																		"line-through text-muted-foreground",
+																			"line-through text-muted-foreground",
 																	)}
 																>
 																	{task.title}
@@ -1397,7 +1398,7 @@ export function DashboardSidebar({
 																	className={cn(
 																		"font-medium text-foreground line-clamp-1",
 																		task.completed &&
-																		"line-through text-muted-foreground",
+																			"line-through text-muted-foreground",
 																	)}
 																>
 																	{task.title}

@@ -30,11 +30,9 @@ export function LoginPage() {
 
 		try {
 			await auth.login(data.email, data.password, data.rememberMe);
-			router.navigate(
-				{
-					to: "/dashboard"
-				}
-			)
+			router.navigate({
+				to: "/dashboard",
+			});
 		} catch (err: any) {
 			setError(err.message || "Prihlasovanie zlyhalo");
 		} finally {

@@ -39,6 +39,7 @@ function formatUserResponse(user: any) {
     email: user.email,
     name: user.name,
     role: user.role,
+    createdAt: user.createdAt,
   }
 }
 
@@ -72,6 +73,7 @@ export const register = action({
         email,
         name,
         role: 'user',
+        createdAt: Date.now(),
       }
     }
   },
@@ -152,6 +154,7 @@ export const updateProfile = action({
         email,
         name,
         role: user.role,
+        createdAt: user.createdAt,
       }
     }
   },

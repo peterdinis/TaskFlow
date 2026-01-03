@@ -16,6 +16,9 @@ interface User {
 	name: string;
 	role: string;
 	createdAt: number;
+	avatar?: string;
+	isActive?: boolean;
+	lastLogin?: number;
 }
 
 interface AuthContextType {

@@ -5,9 +5,6 @@ import { TaskItem } from "./TaskItem";
 import {
 	Filter,
 	X,
-	Hash,
-	Tag,
-	Calendar,
 	CheckCircle,
 	AlertCircle,
 	ChevronLeft,
@@ -38,7 +35,7 @@ import {
 } from "@/components/ui/select";
 
 interface TaskListProps {
-	tasks: any[];
+	tasks: Task[];
 	onToggle: (id: string) => void;
 	onDelete: (id: string) => void;
 	onUpdatePriority: (id: string, priority: Priority) => void;
@@ -166,7 +163,12 @@ export function TaskList({
 						break;
 
 					case "priority":
-						const priorityOrder = { high: 0, medium: 1, low: 2, none: 3 };
+						const priorityOrder: Record<Priority, number> = {
+							high: 0,
+							medium: 1,
+							low: 2,
+							none: 3,
+						};
 						compareValue =
 							priorityOrder[a.priority] - priorityOrder[b.priority];
 						break;

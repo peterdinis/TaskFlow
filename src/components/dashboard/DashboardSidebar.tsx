@@ -127,7 +127,7 @@ export function DashboardSidebar({
 	onThemeChange,
 	currentTheme = "system",
 }: DashboardSidebarProps) {
-	const { user, isLoading: authLoading, logout } = useAuth();
+	const { user, logout } = useAuth();
 	const [showTrashDialog, setShowTrashDialog] = useState(false);
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 	const [showFavoritesDialog, setShowFavoritesDialog] = useState(false);
@@ -454,7 +454,7 @@ export function DashboardSidebar({
 					<div className="h-px bg-sidebar-border my-2" />
 
 					{mainProjects.map((project, index) => {
-						const Icon = iconMap[project.icon] || Hash;
+						const Icon = (project.icon && iconMap[project.icon]) || Hash;
 						return (
 							<motion.button
 								key={project.id}
@@ -930,10 +930,9 @@ export function DashboardSidebar({
 													onClick={() => onThemeChange?.(theme.id as any)}
 													className={`
                             flex flex-col items-center gap-3 p-4 rounded-lg border transition-all
-                            ${
-															currentTheme === theme.id
-																? "bg-primary/10 border-primary text-primary"
-																: "bg-muted/50 border-border hover:bg-muted"
+                            ${currentTheme === theme.id
+															? "bg-primary/10 border-primary text-primary"
+															: "bg-muted/50 border-border hover:bg-muted"
 														}
                           `}
 												>
@@ -1169,7 +1168,7 @@ export function DashboardSidebar({
 																	onClick={() =>
 																		handleToggleFavorite(
 																			task.id,
-																			task.isFavorite,
+																			task.isFavorite || false,
 																		)
 																	}
 																	className="p-1 hover:bg-warning/10 rounded transition-colors"
@@ -1182,7 +1181,7 @@ export function DashboardSidebar({
 																	className={cn(
 																		"font-medium text-foreground line-clamp-1 flex-1",
 																		task.completed &&
-																			"line-through text-muted-foreground",
+																		"line-through text-muted-foreground",
 																	)}
 																>
 																	{task.title}
@@ -1398,7 +1397,7 @@ export function DashboardSidebar({
 																	className={cn(
 																		"font-medium text-foreground line-clamp-1",
 																		task.completed &&
-																			"line-through text-muted-foreground",
+																		"line-through text-muted-foreground",
 																	)}
 																>
 																	{task.title}

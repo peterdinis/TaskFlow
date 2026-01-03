@@ -61,7 +61,7 @@ const RegisterForm: FC = () => {
 
 			// Automatické presmerovanie po 3 sekundách
 			setTimeout(() => {
-				router.navigate({ to: "/" });
+				router.navigate({ to: "/login" });
 			}, 3000);
 		} catch (err: any) {
 			setError(err.message || "Registrácia zlyhala. Skúste to prosím znova.");

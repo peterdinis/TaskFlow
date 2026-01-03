@@ -6,6 +6,7 @@ export const registerInternal = internalMutation({
         name: v.string(),
         email: v.string(),
         passwordHash: v.string(),
+        sessionToken: v.string(),
     },
     handler: async (ctx, args) => {
         const userId = await ctx.db.insert('users', {
@@ -18,7 +19,7 @@ export const registerInternal = internalMutation({
             isActive: true,
         })
 
-        const sessionToken = crypto.randomUUID()
+        const sessionToken = args.sessionToken
         await ctx.db.insert('sessions', {
             userId,
             sessionToken,
@@ -33,6 +34,7 @@ export const loginInternal = internalMutation({
     args: {
         userId: v.id('users'),
         rememberMe: v.boolean(),
+        sessionToken: v.string(),
     },
     handler: async (ctx, args) => {
         await ctx.db.patch(args.userId, {
@@ -40,7 +42,7 @@ export const loginInternal = internalMutation({
             updatedAt: Date.now(),
         })
 
-        const sessionToken = crypto.randomUUID()
+        const sessionToken = args.sessionToken
         const expiresAt = args.rememberMe
             ? Date.now() + 30 * 24 * 60 * 60 * 1000
             : Date.now() + 24 * 60 * 60 * 1000
@@ -110,6 +112,22 @@ export const resetPasswordInternal = internalMutation({
         for (const session of sessions) {
             await ctx.db.delete(session._id)
         }
+    },
+})
+
+export const insertPasswordResetInternal = internalMutation({
+    args: {
+        userId: v.id('users'),
+        token: v.string(),
+        expiresAt: v.number(),
+    },
+    handler: async (ctx, args) => {
+        await ctx.db.insert('passwordResets', {
+            userId: args.userId,
+            token: args.token,
+            expiresAt: args.expiresAt,
+            used: false,
+        })
     },
 })
 

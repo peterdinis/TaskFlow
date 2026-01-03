@@ -1,30 +1,33 @@
 import { v } from 'convex/values'
-import { mutation, query, action, ActionCtx, QueryCtx, MutationCtx } from './_generated/server'
+import { mutation, query, action } from './_generated/server'
 import { hash, compare } from 'bcryptjs'
 import { internal } from './_generated/api'
 
+// Cast internal to any to break circularity in type inference
+const internalAny = internal as any
+
 // --- Helper Functions ---
 
-async function getValidSession(ctx: ActionCtx | QueryCtx | MutationCtx, sessionToken: string): Promise<any> {
-  const session = await ctx.runQuery(internal.auth_internal.getSessionByTokenInternal, { sessionToken })
+async function getValidSession(ctx: any, sessionToken: string): Promise<any> {
+  const session = await ctx.runQuery(internalAny.auth_internal.getSessionByTokenInternal, { sessionToken })
   if (!session) {
     throw new Error('Session not found')
   }
   return session
 }
 
-async function getUserById(ctx: ActionCtx | QueryCtx | MutationCtx, userId: any): Promise<any> {
-  const user = await ctx.runQuery(internal.auth_internal.getUserByIdInternal, { userId })
+async function getUserById(ctx: any, userId: any): Promise<any> {
+  const user = await ctx.runQuery(internalAny.auth_internal.getUserByIdInternal, { userId })
   if (!user) {
     throw new Error('User not found')
   }
   return user
 }
 
-async function checkEmailAvailability(ctx: ActionCtx | QueryCtx | MutationCtx, email: string, currentEmail?: string): Promise<void> {
+async function checkEmailAvailability(ctx: any, email: string, currentEmail?: string): Promise<void> {
   if (email === currentEmail) return
 
-  const existingUser = await ctx.runQuery(internal.auth_internal.getUserByEmailInternal, { email })
+  const existingUser = await ctx.runQuery(internalAny.auth_internal.getUserByEmailInternal, { email })
   if (existingUser) {
     throw new Error('Email už je používaný')
   }
@@ -47,16 +50,18 @@ export const register = action({
     email: v.string(),
     password: v.string(),
   },
-  handler: async (ctx: ActionCtx, args: { name: string; email: string; password: string }) => {
+  handler: async (ctx: any, args: any) => {
     const { name, email, password } = args
 
     await checkEmailAvailability(ctx, email)
 
     const passwordHash = await hash(password, 12)
-    const { userId, sessionToken } = await ctx.runMutation(internal.auth_internal.registerInternal, {
+    const sessionToken = crypto.randomUUID()
+    const { userId } = await ctx.runMutation(internalAny.auth_internal.registerInternal, {
       name,
       email,
       passwordHash,
+      sessionToken,
     })
 
     return {
@@ -78,10 +83,10 @@ export const login = action({
     password: v.string(),
     rememberMe: v.optional(v.boolean()),
   },
-  handler: async (ctx: ActionCtx, args: { email: string; password: string; rememberMe?: boolean }) => {
+  handler: async (ctx: any, args: any) => {
     const { email, password, rememberMe = false } = args
 
-    const user = await ctx.runQuery(internal.auth_internal.getUserByEmailInternal, { email })
+    const user = await ctx.runQuery(internalAny.auth_internal.getUserByEmailInternal, { email })
     if (!user) {
       throw new Error('Nesprávny email alebo heslo')
     }
@@ -95,9 +100,11 @@ export const login = action({
       throw new Error('Nesprávny email alebo heslo')
     }
 
-    const { sessionToken } = await ctx.runMutation(internal.auth_internal.loginInternal, {
+    const sessionToken = crypto.randomUUID()
+    await ctx.runMutation(internalAny.auth_internal.loginInternal, {
       userId: user._id,
       rememberMe,
+      sessionToken,
     })
 
     return {
@@ -115,7 +122,7 @@ export const updateProfile = action({
     currentPassword: v.optional(v.string()),
     newPassword: v.optional(v.string()),
   },
-  handler: async (ctx: ActionCtx, args: { sessionToken: string; name: string; email: string; currentPassword?: string; newPassword?: string }) => {
+  handler: async (ctx: any, args: any) => {
     const { sessionToken, name, email, currentPassword, newPassword } = args
 
     const session = await getValidSession(ctx, sessionToken)
@@ -132,7 +139,7 @@ export const updateProfile = action({
       passwordHash = await hash(newPassword, 12)
     }
 
-    await ctx.runMutation(internal.auth_internal.updateProfileInternal, {
+    await ctx.runMutation(internalAny.auth_internal.updateProfileInternal, {
       userId: user._id,
       name,
       email,
@@ -155,9 +162,9 @@ export const resetPassword = action({
     token: v.string(),
     password: v.string(),
   },
-  handler: async (ctx: ActionCtx, args: { token: string; password: string }) => {
+  handler: async (ctx: any, args: any) => {
     const resetRequest = await ctx.runQuery(
-      internal.auth_internal.getResetRequestByTokenInternal,
+      internalAny.auth_internal.getResetRequestByTokenInternal,
       { token: args.token }
     )
 
@@ -168,7 +175,7 @@ export const resetPassword = action({
     const user = await getUserById(ctx, resetRequest.userId)
 
     const passwordHash = await hash(args.password, 12)
-    await ctx.runMutation(internal.auth_internal.resetPasswordInternal, {
+    await ctx.runMutation(internalAny.auth_internal.resetPasswordInternal, {
       userId: user._id,
       resetRequestId: resetRequest._id,
       passwordHash,
@@ -203,13 +210,7 @@ export const getCurrentUser = query({
       return null
     }
 
-    return {
-      id: user._id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      createdAt: user.createdAt,
-    }
+    return formatUserResponse(user)
   },
 })
 
@@ -231,15 +232,12 @@ export const logout = mutation({
   },
 })
 
-export const forgotPassword = mutation({
+export const forgotPassword = action({
   args: {
     email: v.string(),
   },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_email', (q) => q.eq('email', args.email))
-      .first()
+  handler: async (ctx: any, args: any) => {
+    const user = await ctx.runQuery(internalAny.auth_internal.getUserByEmailInternal, { email: args.email })
 
     if (!user) {
       return { success: true }
@@ -248,11 +246,10 @@ export const forgotPassword = mutation({
     const token = crypto.randomUUID()
     const expiresAt = Date.now() + 60 * 60 * 1000
 
-    await ctx.db.insert('passwordResets', {
+    await ctx.runMutation(internalAny.auth_internal.insertPasswordResetInternal, {
       userId: user._id,
       token,
       expiresAt,
-      used: false,
     })
 
     console.log(`Password reset token for ${user.email}: ${token}`)

@@ -2,8 +2,8 @@ import z from "zod";
 
 export const createTodoSchema = z.object({
 	userId: z.string(),
-	projectId: z.string(),
-	labelId: z.string(),
+	projectId: z.string().optional(),
+	labelId: z.string().optional(),
 	taskName: z
 		.string()
 		.min(1, "Task name is required")
@@ -12,6 +12,7 @@ export const createTodoSchema = z.object({
 	dueDate: z.number().positive("Due date must be a positive timestamp"),
 	priority: z.number().min(0).max(10).optional(),
 	isCompleted: z.boolean().optional(),
+	tags: z.array(z.string()).optional(),
 	embedding: z.array(z.number()).length(1536).optional(),
 });
 
@@ -24,6 +25,7 @@ export const updateTodoSchema = z.object({
 	isCompleted: z.boolean().optional(),
 	projectId: z.string().optional(),
 	labelId: z.string().optional(),
+	tags: z.array(z.string()).optional(),
 	embedding: z.array(z.number()).length(1536).optional(),
 });
 

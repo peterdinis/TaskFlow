@@ -17,8 +17,9 @@ interface Task {
 	description?: string;
 	completed: boolean;
 	priority: "high" | "medium" | "low" | "none";
-	projectId: string;
-	labelId: string;
+	projectId?: string;
+	labelId?: string;
+	tags?: string[];
 	dueDate?: Date;
 	createdAt?: Date;
 }
@@ -49,8 +50,9 @@ interface TodoContextType {
 	addTodo: (data: {
 		taskName: string;
 		description?: string;
-		projectId: string;
-		labelId: string;
+		projectId?: string;
+		labelId?: string;
+		tags?: string[];
 		dueDate: number;
 		priority?: Task["priority"];
 	}) => Promise<string>;
@@ -132,6 +134,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 				priority: mapPriority(t.priority),
 				projectId: t.projectId,
 				labelId: t.labelId,
+				tags: t.tags,
 				dueDate: t.dueDate ? new Date(t.dueDate) : undefined,
 			}));
 			setTasks(mappedTasks);
@@ -200,8 +203,9 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 	const addTodo = async (data: {
 		taskName: string;
 		description?: string;
-		projectId: string;
-		labelId: string;
+		projectId?: string;
+		labelId?: string;
+		tags?: string[];
 		dueDate: number;
 		priority?: Task["priority"];
 	}) => {
@@ -209,8 +213,10 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 		return await createTodoMutation({
 			...data,
 			userId: user.id as Id<"users">,
-			projectId: data.projectId as Id<"projects">,
-			labelId: data.labelId as Id<"labels">,
+			projectId: data.projectId
+				? (data.projectId as Id<"projects">)
+				: undefined,
+			labelId: data.labelId ? (data.labelId as Id<"labels">) : undefined,
 			isCompleted: false,
 			priority: data.priority ? reversePriority(data.priority) : 0,
 		});

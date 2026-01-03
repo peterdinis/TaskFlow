@@ -7,13 +7,14 @@ import { createTodoSchema, getTodosByProjectSchema, getTodosByLabelSchema, getTo
 export const createTodo = mutation({
   args: {
     userId: v.id("users"),
-    projectId: v.id("projects"),
-    labelId: v.id("labels"),
+    projectId: v.optional(v.id("projects")),
+    labelId: v.optional(v.id("labels")),
     taskName: v.string(),
     description: v.optional(v.string()),
     dueDate: v.number(),
     priority: v.optional(v.float64()),
     isCompleted: v.optional(v.boolean()),
+    tags: v.optional(v.array(v.string())),
     embedding: v.optional(v.array(v.float64())),
   },
   handler: async (ctx, args) => {
@@ -27,6 +28,7 @@ export const createTodo = mutation({
       dueDate: args.dueDate,
       priority: args.priority,
       isCompleted: args.isCompleted,
+      tags: args.tags,
       embedding: args.embedding,
     })
 
@@ -39,6 +41,7 @@ export const createTodo = mutation({
       dueDate: validated.dueDate,
       priority: validated.priority,
       isCompleted: validated.isCompleted ?? false,
+      tags: validated.tags,
       embedding: validated.embedding,
     })
     return todoId
@@ -70,9 +73,9 @@ export const getTodosByUser = query({
 
 // READ - Get todos by project
 export const getTodosByProject = query({
-  args: { 
+  args: {
     userId: v.id("users"),
-    projectId: v.id("projects") 
+    projectId: v.id("projects")
   },
   handler: async (ctx, args) => {
     // Validate input
@@ -83,7 +86,7 @@ export const getTodosByProject = query({
 
     return await ctx.db
       .query("todos")
-      .filter((q) => 
+      .filter((q) =>
         q.and(
           q.eq(q.field("userId"), args.userId),
           q.eq(q.field("projectId"), args.projectId)
@@ -95,9 +98,9 @@ export const getTodosByProject = query({
 
 // READ - Get todos by label
 export const getTodosByLabel = query({
-  args: { 
+  args: {
     userId: v.id("users"),
-    labelId: v.id("labels") 
+    labelId: v.id("labels")
   },
   handler: async (ctx, args) => {
     // Validate input
@@ -108,7 +111,7 @@ export const getTodosByLabel = query({
 
     return await ctx.db
       .query("todos")
-      .filter((q) => 
+      .filter((q) =>
         q.and(
           q.eq(q.field("userId"), args.userId),
           q.eq(q.field("labelId"), args.labelId)
@@ -124,7 +127,7 @@ export const getCompletedTodos = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("todos")
-      .filter((q) => 
+      .filter((q) =>
         q.and(
           q.eq(q.field("userId"), args.userId),
           q.eq(q.field("isCompleted"), true)
@@ -140,7 +143,7 @@ export const getPendingTodos = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("todos")
-      .filter((q) => 
+      .filter((q) =>
         q.and(
           q.eq(q.field("userId"), args.userId),
           q.eq(q.field("isCompleted"), false)
@@ -152,9 +155,9 @@ export const getPendingTodos = query({
 
 // READ - Get todos due before a certain date
 export const getTodosDueBefore = query({
-  args: { 
+  args: {
     userId: v.id("users"),
-    dueDate: v.number() 
+    dueDate: v.number()
   },
   handler: async (ctx, args) => {
     // Validate input
@@ -165,7 +168,7 @@ export const getTodosDueBefore = query({
 
     return await ctx.db
       .query("todos")
-      .filter((q) => 
+      .filter((q) =>
         q.and(
           q.eq(q.field("userId"), args.userId),
           q.lte(q.field("dueDate"), args.dueDate)
@@ -186,6 +189,7 @@ export const updateTodo = mutation({
     isCompleted: v.optional(v.boolean()),
     projectId: v.optional(v.id("projects")),
     labelId: v.optional(v.id("labels")),
+    tags: v.optional(v.array(v.string())),
     embedding: v.optional(v.array(v.float64())),
   },
   handler: async (ctx, args) => {
@@ -201,6 +205,7 @@ export const updateTodo = mutation({
       isCompleted: args.isCompleted,
       projectId: args.projectId,
       labelId: args.labelId,
+      tags: args.tags,
       embedding: args.embedding,
     })
 
@@ -214,7 +219,7 @@ export const updateTodo = mutation({
     const filteredUpdates = Object.fromEntries(
       Object.entries(updates).filter(([_, value]) => value !== undefined)
     )
-    
+
     await ctx.db.patch(id, filteredUpdates)
     return id
   },
@@ -228,7 +233,7 @@ export const toggleTodoCompletion = mutation({
     if (!todo) {
       throw new Error("Todo not found")
     }
-    
+
     await ctx.db.patch(args.id, {
       isCompleted: !todo.isCompleted,
     })
@@ -257,18 +262,18 @@ export const deleteCompletedTodos = mutation({
   handler: async (ctx, args) => {
     const completedTodos = await ctx.db
       .query("todos")
-      .filter((q) => 
+      .filter((q) =>
         q.and(
           q.eq(q.field("userId"), args.userId),
           q.eq(q.field("isCompleted"), true)
         )
       )
       .collect()
-    
+
     for (const todo of completedTodos) {
       await ctx.db.delete(todo._id)
     }
-    
+
     return completedTodos.length
   },
 })
@@ -291,7 +296,7 @@ export const searchTodosByEmbedding = query({
     const results = await ctx.db
       .query("todos")
       .collect()
-    
+
     return results.slice(0, validated.limit ?? 10)
   },
 })

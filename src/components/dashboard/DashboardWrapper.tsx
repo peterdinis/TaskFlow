@@ -21,6 +21,7 @@ const DashboardWrapper: FC = () => {
 		deleteTask,
 		updateTaskPriority,
 		taskCount,
+		labels,
 	} = useTasks();
 
 	const { unreadCount } = useNotifications();
@@ -85,7 +86,16 @@ const DashboardWrapper: FC = () => {
 				</div>
 			</motion.main>
 
-			<AddTaskButton onAdd={addTask} />
+			<AddTaskButton
+				onAdd={addTask}
+				projects={projects.map((p) => ({
+					id: p.id,
+					name: p.name,
+					color: p.color || "#000000",
+				}))}
+				tags={labels.map((l) => l.name)}
+				defaultProject={activeProject !== "inbox" ? activeProject : undefined}
+			/>
 
 			<SearchModal
 				isOpen={searchOpen}

@@ -76,4 +76,12 @@ export default defineSchema({
         color: v.optional(v.string()),
         icon: v.optional(v.string()),
     }),
+    notifications: defineTable({
+        userId: v.id("users"),
+        type: v.union(v.literal("success"), v.literal("reminder"), v.literal("alert")),
+        title: v.string(),
+        message: v.string(),
+        isRead: v.boolean(),
+        createdAt: v.number(),
+    }).index("by_user", ["userId"]),
 })

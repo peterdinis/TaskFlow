@@ -6,6 +6,7 @@ import { DashboardHeader } from "./DashboardHeader";
 import { DashboardStats } from "./DashboardStats";
 import { AddTaskButton } from "../tasks/AddTaskButton";
 import { NotificationsModal } from "../modals/NotificationModal";
+import { useNotifications } from "@/context/NotificationContext";
 import { SearchModal } from "../modals/SearchModal";
 import { TaskList } from "../tasks/TaskList";
 
@@ -21,6 +22,8 @@ const DashboardWrapper: FC = () => {
 		updateTaskPriority,
 		taskCount,
 	} = useTasks();
+
+	const { unreadCount } = useNotifications();
 
 	const currentProject = projects.find((p) => p.id === activeProject);
 	const highPriorityCount = tasks.filter(
@@ -40,7 +43,7 @@ const DashboardWrapper: FC = () => {
 				isOpen={sidebarOpen}
 				onToggle={() => setSidebarOpen(!sidebarOpen)}
 				onOpenNotifications={() => setNotificationsOpen(true)}
-				notificationCount={2}
+				notificationCount={unreadCount}
 			/>
 			<motion.main
 				className="flex-1 flex flex-col min-w-0"
@@ -52,7 +55,7 @@ const DashboardWrapper: FC = () => {
 					onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
 					onOpenSearch={() => setSearchOpen(true)}
 					onOpenNotifications={() => setNotificationsOpen(true)}
-					notificationCount={2}
+					notificationCount={unreadCount}
 				/>
 
 				<div className="flex-1 overflow-y-auto">
@@ -83,15 +86,6 @@ const DashboardWrapper: FC = () => {
 			</motion.main>
 
 			<AddTaskButton onAdd={addTask} />
-
-			<SearchModal
-				isOpen={searchOpen}
-				onClose={() => setSearchOpen(false)}
-				tasks={tasks}
-				onSelectTask={(id) => {
-					console.log("Selected task:", id);
-				}}
-			/>
 
 			<SearchModal
 				isOpen={searchOpen}

@@ -67,7 +67,7 @@ export const clearAll = mutation({
 })
 
 // INTERNAL - Create a notification
-export const createNotificationInternal = internalMutation({
+export const createNotificationInternal = mutation({
     args: {
         userId: v.id("users"),
         type: v.union(v.literal("success"), v.literal("reminder"), v.literal("alert")),

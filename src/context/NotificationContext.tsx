@@ -28,6 +28,11 @@ interface NotificationContextType {
 	markAllAsRead: () => Promise<void>;
 	deleteNotification: (id: string) => Promise<void>;
 	clearAll: () => Promise<void>;
+	createNotification: (
+		type: "success" | "reminder" | "alert",
+		title: string,
+		message: string,
+	) => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
@@ -50,6 +55,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 		api.notifications.deleteNotification,
 	);
 	const clearAllMutation = useMutation(api.notifications.clearAll);
+	const createNotificationMutation = useMutation(api.notifications.createNotificationInternal);
 
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -95,6 +101,20 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 		await clearAllMutation({ userId: user.id as Id<"users"> });
 	};
 
+	const createNotification = async (
+		type: "success" | "reminder" | "alert",
+		title: string,
+		message: string,
+	) => {
+		if (!user) return;
+		await createNotificationMutation({
+			userId: user.id as Id<"users">,
+			type,
+			title,
+			message,
+		});
+	};
+
 	const value = {
 		notifications,
 		unreadCount,
@@ -103,6 +123,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 		markAllAsRead,
 		deleteNotification,
 		clearAll,
+		createNotification,
 	};
 
 	return (

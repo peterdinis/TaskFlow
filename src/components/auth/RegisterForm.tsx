@@ -82,11 +82,10 @@ const RegisterForm: FC = () => {
 						Registration Successful!
 					</h2>
 					<p className="text-gray-600 mb-6">
-						Your account has been successfully created. You are automatically logged in.
+						Your account has been successfully created. You are automatically
+						logged in.
 					</p>
-					<p className="text-sm text-gray-500">
-						Redirecting to home page...
-					</p>
+					<p className="text-sm text-gray-500">Redirecting to home page...</p>
 				</div>
 			</div>
 		);
@@ -95,7 +94,9 @@ const RegisterForm: FC = () => {
 	return (
 		<div className="max-w-md w-full mx-auto p-8 bg-white rounded-lg shadow-md">
 			<div className="text-center mb-8">
-				<h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+				<h1 className="text-3xl font-bold text-gray-900 mb-2">
+					Create Account
+				</h1>
 				<p className="text-gray-600">Fill in your details to register</p>
 			</div>
 
@@ -183,7 +184,9 @@ const RegisterForm: FC = () => {
 					{password && (
 						<div className="mt-2">
 							<div className="flex justify-between mb-1">
-								<span className="text-sm text-gray-600">Password strength:</span>
+								<span className="text-sm text-gray-600">
+									Password strength:
+								</span>
 								<span className="text-sm font-medium">
 									{passwordStrength()}%
 								</span>

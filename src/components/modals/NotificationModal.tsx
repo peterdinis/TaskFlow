@@ -44,14 +44,18 @@ export function NotificationsModal({
 		clearAll,
 		createNotification,
 	} = useNotifications();
-	
+
 	const [isDeleting, setIsDeleting] = useState<string | null>(null);
-	const [newNotifications, setNewNotifications] = useState<Set<string>>(new Set());
+	const [newNotifications, setNewNotifications] = useState<Set<string>>(
+		new Set(),
+	);
 	const [hasNewNotifications, setHasNewNotifications] = useState(false);
 	const [showSuccessFeedback, setShowSuccessFeedback] = useState(false);
 	const [successMessage, setSuccessMessage] = useState("");
-	const [pulsingNotification, setPulsingNotification] = useState<string | null>(null);
-	
+	const [pulsingNotification, setPulsingNotification] = useState<string | null>(
+		null,
+	);
+
 	const previousNotificationsRef = useRef(notifications);
 	const previousUnreadCountRef = useRef(unreadCount);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -63,29 +67,31 @@ export function NotificationsModal({
 			return;
 		}
 
-		const currentIds = new Set(notifications.map(n => n.id));
-		const previousIds = new Set(previousNotificationsRef.current.map(n => n.id));
-		
+		const currentIds = new Set(notifications.map((n) => n.id));
+		const previousIds = new Set(
+			previousNotificationsRef.current.map((n) => n.id),
+		);
+
 		// Find new notifications
-		const newIds = [...currentIds].filter(id => !previousIds.has(id));
-		
+		const newIds = [...currentIds].filter((id) => !previousIds.has(id));
+
 		if (newIds.length > 0) {
 			// Play sound for new notifications
 			if (audioRef.current) {
 				audioRef.current.currentTime = 0;
 				audioRef.current.play().catch(console.error);
 			}
-			
+
 			// Add new notifications to highlight set
-			setNewNotifications(prev => {
+			setNewNotifications((prev) => {
 				const updated = new Set(prev);
-				newIds.forEach(id => updated.add(id));
+				newIds.forEach((id) => updated.add(id));
 				return updated;
 			});
-			
+
 			// Show "new" indicator
 			setHasNewNotifications(true);
-			
+
 			// Pulse animation for the newest notification
 			const newestId = notifications[0]?.id;
 			if (newestId) {
@@ -95,16 +101,16 @@ export function NotificationsModal({
 				}, 1500);
 				return () => clearTimeout(timer);
 			}
-			
+
 			// Auto-clear highlight after 3 seconds
 			const clearTimer = setTimeout(() => {
 				setNewNotifications(new Set());
 				setHasNewNotifications(false);
 			}, 3000);
-			
+
 			return () => clearTimeout(clearTimer);
 		}
-		
+
 		previousNotificationsRef.current = notifications;
 	}, [notifications, isOpen]);
 
@@ -112,7 +118,9 @@ export function NotificationsModal({
 	useEffect(() => {
 		if (isOpen && previousUnreadCountRef.current > unreadCount) {
 			// User marked notifications as read
-			setSuccessMessage(`Marked ${previousUnreadCountRef.current - unreadCount} notifications as read`);
+			setSuccessMessage(
+				`Marked ${previousUnreadCountRef.current - unreadCount} notifications as read`,
+			);
 			setShowSuccessFeedback(true);
 			setTimeout(() => setShowSuccessFeedback(false), 2000);
 		}
@@ -127,7 +135,7 @@ export function NotificationsModal({
 
 	const handleMarkAllAsRead = async () => {
 		if (unreadCount === 0) return;
-		
+
 		try {
 			await markAllAsRead();
 			showFeedback(`Marked ${unreadCount} notifications as read`);
@@ -165,7 +173,7 @@ export function NotificationsModal({
 
 	const handleClearAll = async () => {
 		if (notifications.length === 0) return;
-		
+
 		try {
 			await clearAll();
 			showFeedback(`Cleared ${notifications.length} notifications`);
@@ -175,24 +183,23 @@ export function NotificationsModal({
 		}
 	};
 
-	const handleAddTestNotification = async (type: "success" | "reminder" | "alert") => {
+	const handleAddTestNotification = async (
+		type: "success" | "reminder" | "alert",
+	) => {
 		const titles = {
 			success: "Task Completed",
 			reminder: "Meeting Reminder",
-			alert: "Important Update"
+			alert: "Important Update",
 		};
-		
+
 		const messages = {
 			success: "Your task 'Design Review' has been completed successfully.",
 			reminder: "Team meeting starts in 30 minutes. Don't forget to prepare!",
-			alert: "System maintenance scheduled for tonight at 2 AM. Please save your work."
+			alert:
+				"System maintenance scheduled for tonight at 2 AM. Please save your work.",
 		};
 
-		await createNotification(
-			type,
-			titles[type],
-			messages[type]
-		);
+		await createNotification(type, titles[type], messages[type]);
 		showFeedback(`Added ${type} notification`);
 	};
 
@@ -200,23 +207,23 @@ export function NotificationsModal({
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (!isOpen) return;
-			
+
 			if (e.key === "Escape") {
 				onClose();
 			}
-			
+
 			if (e.key === "r" && (e.metaKey || e.ctrlKey)) {
 				e.preventDefault();
 				handleMarkAllAsRead();
 			}
-			
+
 			if ((e.key === "Delete" || e.key === "Backspace") && e.metaKey) {
 				e.preventDefault();
 				if (notifications.length > 0) {
 					handleClearAll();
 				}
 			}
-			
+
 			// Test shortcuts (only in development)
 			if (process.env.NODE_ENV === "development") {
 				if (e.key === "1" && e.altKey) {
@@ -258,7 +265,7 @@ export function NotificationsModal({
 						className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-50"
 						onClick={onClose}
 					/>
-					
+
 					{/* Success feedback - improved */}
 					<AnimatePresence>
 						{showSuccessFeedback && (
@@ -273,7 +280,7 @@ export function NotificationsModal({
 							</motion.div>
 						)}
 					</AnimatePresence>
-					
+
 					{/* New notifications indicator */}
 					<AnimatePresence>
 						{hasNewNotifications && (
@@ -288,7 +295,7 @@ export function NotificationsModal({
 							</motion.div>
 						)}
 					</AnimatePresence>
-					
+
 					<motion.div
 						initial={{ opacity: 0, x: 20 }}
 						animate={{ opacity: 1, x: 0 }}
@@ -335,7 +342,7 @@ export function NotificationsModal({
 											Test
 										</button>
 									)}
-									
+
 									{notifications.length > 0 && (
 										<motion.button
 											whileHover={{ scale: 1.05 }}
@@ -365,7 +372,9 @@ export function NotificationsModal({
 								{isLoading ? (
 									<div className="flex flex-col items-center justify-center h-full px-5 py-10">
 										<div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mb-4" />
-										<p className="text-sm text-muted-foreground">Loading notifications...</p>
+										<p className="text-sm text-muted-foreground">
+											Loading notifications...
+										</p>
 									</div>
 								) : notifications.length === 0 ? (
 									<div className="flex flex-col items-center justify-center h-full px-5 py-10 text-center">
@@ -395,11 +404,13 @@ export function NotificationsModal({
 													key={notification.id}
 													layout
 													initial={{ opacity: 0, x: -20 }}
-													animate={{ 
-														opacity: isDeletingItem ? 0 : 1, 
+													animate={{
+														opacity: isDeletingItem ? 0 : 1,
 														x: isDeletingItem ? 20 : 0,
 														scale: isDeletingItem ? 0.9 : 1,
-														borderColor: isNew ? "rgb(59 130 246 / 0.5)" : "transparent",
+														borderColor: isNew
+															? "rgb(59 130 246 / 0.5)"
+															: "transparent",
 													}}
 													exit={{ opacity: 0, x: 20 }}
 													transition={{
@@ -410,14 +421,18 @@ export function NotificationsModal({
 													}}
 													onClick={() =>
 														!notification.isRead &&
-														handleMarkAsRead(notification.id, notification.title)
+														handleMarkAsRead(
+															notification.id,
+															notification.title,
+														)
 													}
 													className={cn(
 														"group relative px-5 py-4 border-l-4 border-transparent hover:bg-muted/50 transition-all duration-300 cursor-pointer",
 														!notification.isRead && "bg-primary/5",
 														isDeletingItem && "opacity-50 pointer-events-none",
-														isNew && "border-l-primary bg-primary/10 animate-pulse-border",
-														isPulsing && "animate-pulse-glow"
+														isNew &&
+															"border-l-primary bg-primary/10 animate-pulse-border",
+														isPulsing && "animate-pulse-glow",
 													)}
 												>
 													{isNew && (
@@ -427,11 +442,13 @@ export function NotificationsModal({
 															className="absolute -left-1 top-3 w-2 h-2 rounded-full bg-primary"
 														/>
 													)}
-													
+
 													<div className="flex gap-3">
 														<motion.div
 															animate={isPulsing ? { scale: [1, 1.1, 1] } : {}}
-															transition={isPulsing ? { repeat: 3, duration: 0.5 } : {}}
+															transition={
+																isPulsing ? { repeat: 3, duration: 0.5 } : {}
+															}
 															className={cn(
 																"w-8 h-8 rounded-full flex items-center justify-center shrink-0",
 																colorMap[notification.type],
@@ -481,7 +498,10 @@ export function NotificationsModal({
 														whileTap={{ scale: 0.9 }}
 														onClick={(e) => {
 															e.stopPropagation();
-															handleDeleteNotification(notification.id, notification.title);
+															handleDeleteNotification(
+																notification.id,
+																notification.title,
+															);
 														}}
 														className="absolute top-3 right-5 p-1.5 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
 														disabled={isDeletingItem}
@@ -527,27 +547,32 @@ export function NotificationsModal({
 											)}
 										</button>
 									</div>
-									
+
 									{/* Stats */}
 									<div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
 										<span className="flex items-center gap-1">
 											<Bell className="w-3 h-3" />
 											Total: {notifications.length}
 										</span>
-										<span className={cn(
-											"px-2 py-0.5 rounded-full",
-											unreadCount > 0 
-												? "bg-primary/10 text-primary" 
-												: "bg-green-500/10 text-green-500"
-										)}>
+										<span
+											className={cn(
+												"px-2 py-0.5 rounded-full",
+												unreadCount > 0
+													? "bg-primary/10 text-primary"
+													: "bg-green-500/10 text-green-500",
+											)}
+										>
 											{unreadCount > 0 ? `${unreadCount} unread` : "All read"}
 										</span>
 										<span>
-											Latest: {notifications.length > 0 && 
-												formatDistanceToNow(new Date(notifications[0].createdAt), {
-													addSuffix: true
-												})
-											}
+											Latest:{" "}
+											{notifications.length > 0 &&
+												formatDistanceToNow(
+													new Date(notifications[0].createdAt),
+													{
+														addSuffix: true,
+													},
+												)}
 										</span>
 									</div>
 								</div>

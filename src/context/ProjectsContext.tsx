@@ -54,14 +54,14 @@ interface UpdateProjectData {
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
-	const { user,  } = useAuth();
+	const { user } = useAuth();
 	const [error, setError] = useState<string | null>(null);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
 	// Queries
 	const rawProjects = useQuery(
 		api.projects.getProjectsByUser,
-		user ? { userId: user.id as Id<"users"> } : { userId: null }
+		user ? { userId: user.id as Id<"users"> } : { userId: null },
 	);
 
 	// Mutations
@@ -104,21 +104,21 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
 	// Separate system and user projects
 	const systemProjects = useMemo(() => {
-		return projects.filter(project => project.type === "system");
+		return projects.filter((project) => project.type === "system");
 	}, [projects]);
 
 	const userProjects = useMemo(() => {
-		return projects.filter(project => project.type === "user");
+		return projects.filter((project) => project.type === "user");
 	}, [projects]);
 
 	// Get project by ID
 	const getProject = (id: string) => {
-		return projects.find(project => project.id === id);
+		return projects.find((project) => project.id === id);
 	};
 
 	// Get projects by type
 	const getProjectsByType = (type: "user" | "system") => {
-		return projects.filter(project => project.type === type);
+		return projects.filter((project) => project.type === type);
 	};
 
 	// Create new project
@@ -138,7 +138,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 			});
 		} catch (error) {
 			console.error("Failed to create project:", error);
-			setError(error instanceof Error ? error.message : "Failed to create project");
+			setError(
+				error instanceof Error ? error.message : "Failed to create project",
+			);
 			throw error;
 		}
 	};
@@ -153,7 +155,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 			});
 		} catch (error) {
 			console.error("Failed to update project:", error);
-			setError(error instanceof Error ? error.message : "Failed to update project");
+			setError(
+				error instanceof Error ? error.message : "Failed to update project",
+			);
 			throw error;
 		}
 	};
@@ -165,7 +169,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 			await deleteProjectMutation({ id: id as Id<"projects"> });
 		} catch (error) {
 			console.error("Failed to delete project:", error);
-			setError(error instanceof Error ? error.message : "Failed to delete project");
+			setError(
+				error instanceof Error ? error.message : "Failed to delete project",
+			);
 			throw error;
 		}
 	};
@@ -255,9 +261,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	};
 
 	return (
-		<ProjectContext.Provider value={value}>
-			{children}
-		</ProjectContext.Provider>
+		<ProjectContext.Provider value={value}>{children}</ProjectContext.Provider>
 	);
 }
 

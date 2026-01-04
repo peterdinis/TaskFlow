@@ -500,7 +500,9 @@ export function DashboardSidebar({
 												</p>
 												<div className="flex items-center gap-2 mt-2 text-xs text-sidebar-foreground/50">
 													<CheckCircle className="w-3 h-3" />
-													<span>Member since {formatJoinDate(user.createdAt)}</span>
+													<span>
+														Member since {formatJoinDate(user.createdAt)}
+													</span>
 												</div>
 											</div>
 											<Edit className="w-4 h-4 text-sidebar-foreground/60" />
@@ -686,7 +688,10 @@ export function DashboardSidebar({
 														: "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
 										)}
 									>
-										<link.icon className="w-4 h-4" style={{ color: link.color }} />
+										<link.icon
+											className="w-4 h-4"
+											style={{ color: link.color }}
+										/>
 										<div className="flex items-center justify-between flex-1">
 											<span className="truncate">{link.name}</span>
 											{link.id === "trash" && deletedTasks.length > 0 && (
@@ -1042,7 +1047,6 @@ export function DashboardSidebar({
 
 					<div className="flex-1 overflow-y-auto pr-2">
 						<div className="space-y-6">
-
 							{/* Notification Settings */}
 							<div className="rounded-lg border border-border p-4">
 								<h3 className="font-medium text-lg mb-4 flex items-center gap-2">
@@ -1193,7 +1197,10 @@ export function DashboardSidebar({
 					</div>
 
 					<DialogFooter>
-						<Button variant="outline" onClick={() => setShowSettingsDialog(false)}>
+						<Button
+							variant="outline"
+							onClick={() => setShowSettingsDialog(false)}
+						>
 							Cancel
 						</Button>
 						<Button onClick={handleSaveSettings} className="gap-2">

@@ -52,7 +52,7 @@ export function AddTaskButton({
 	tags = [],
 	defaultProject,
 }: AddTaskButtonProps) {
-	const { createNotification } = useNotifications(); 
+	const { createNotification } = useNotifications();
 	const [isOpen, setIsOpen] = useState(false);
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [title, setTitle] = useState("");
@@ -84,14 +84,14 @@ export function AddTaskButton({
 				description: description.trim(),
 				projectId: selectedProject || undefined,
 			});
-			
+
 			// Pridanie notifikácie po úspešnom vytvorení úlohy
 			await createNotification(
 				"success",
 				"Task Created",
-				`Task "${title.trim()}" has been successfully created.`
+				`Task "${title.trim()}" has been successfully created.`,
 			);
-			
+
 			resetForm();
 		}
 	};
@@ -106,14 +106,14 @@ export function AddTaskButton({
 				description: description.trim(),
 				projectId: selectedProject || undefined,
 			});
-			
+
 			// Pridanie notifikácie pre quick add
 			await createNotification(
 				"success",
 				"Task Created",
-				`Task "${title.trim()}" has been quickly added.`
+				`Task "${title.trim()}" has been quickly added.`,
 			);
-			
+
 			resetForm();
 		}
 	};

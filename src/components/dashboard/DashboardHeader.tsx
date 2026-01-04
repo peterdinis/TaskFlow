@@ -360,7 +360,8 @@ export function DashboardHeader({
 									}}
 									className={cn(
 										"h-11",
-										projectError && "border-destructive focus-visible:ring-destructive",
+										projectError &&
+											"border-destructive focus-visible:ring-destructive",
 									)}
 									autoFocus
 									onKeyDown={(e) => {
@@ -476,28 +477,26 @@ export function DashboardHeader({
 													<span
 														className={cn(
 															"font-medium text-foreground truncate max-w-[200px]",
-															!projectData.name && "text-muted-foreground italic",
+															!projectData.name &&
+																"text-muted-foreground italic",
 														)}
 													>
 														{projectData.name || "Your project name"}
 													</span>
 												</TooltipTrigger>
 												{projectData.name && (
-													<TooltipContent>
-														{projectData.name}
-													</TooltipContent>
+													<TooltipContent>{projectData.name}</TooltipContent>
 												)}
 											</Tooltip>
 											<Tooltip>
 												<TooltipTrigger asChild>
 													<Badge variant="outline" className="text-xs">
-														{projectIcons.find((i) => i.icon === projectData.icon)
-															?.name || "Briefcase"}
+														{projectIcons.find(
+															(i) => i.icon === projectData.icon,
+														)?.name || "Briefcase"}
 													</Badge>
 												</TooltipTrigger>
-												<TooltipContent>
-													Selected icon type
-												</TooltipContent>
+												<TooltipContent>Selected icon type</TooltipContent>
 											</Tooltip>
 										</div>
 										<p className="text-xs text-muted-foreground">
@@ -520,8 +519,8 @@ export function DashboardHeader({
 														Sign In Required
 													</p>
 													<p className="text-sm text-warning/80">
-														Projects created in guest mode are temporary. Sign in to
-														save them permanently.
+														Projects created in guest mode are temporary. Sign
+														in to save them permanently.
 													</p>
 												</div>
 											</div>

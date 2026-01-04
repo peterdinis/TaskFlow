@@ -65,9 +65,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 						<AuthProvider>
 							<TodoProvider>
 								<NotificationProvider>
-									<ProjectProvider>
-										{children}
-									</ProjectProvider>
+									<ProjectProvider>{children}</ProjectProvider>
 								</NotificationProvider>
 							</TodoProvider>
 							<TanStackDevtools

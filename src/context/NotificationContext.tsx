@@ -55,7 +55,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 		api.notifications.deleteNotification,
 	);
 	const clearAllMutation = useMutation(api.notifications.clearAll);
-	const createNotificationMutation = useMutation(api.notifications.createNotificationInternal);
+	const createNotificationMutation = useMutation(
+		api.notifications.createNotificationInternal,
+	);
 
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 	const [isLoading, setIsLoading] = useState(true);

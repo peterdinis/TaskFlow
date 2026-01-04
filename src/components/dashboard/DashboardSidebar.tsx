@@ -49,6 +49,12 @@ import { format } from "date-fns";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
 
 interface DashboardSidebarProps {
@@ -82,14 +88,22 @@ const quickLinks = [
 		name: "Favorites",
 		icon: Star,
 		color: "hsl(45, 90%, 50%)",
+		description: "Your favorite tasks",
 	},
 	{
 		id: "archive",
 		name: "Archive",
 		icon: Archive,
 		color: "hsl(210, 40%, 50%)",
+		description: "Archived tasks",
 	},
-	{ id: "trash", name: "Trash", icon: Trash2, color: "hsl(0, 60%, 50%)" },
+	{
+		id: "trash",
+		name: "Trash",
+		icon: Trash2,
+		color: "hsl(0, 60%, 50%)",
+		description: "Deleted tasks",
+	},
 ];
 
 export function DashboardSidebar({
@@ -306,297 +320,392 @@ export function DashboardSidebar({
 				/>
 			)}
 
-			<motion.aside
-				initial={false}
-				animate={{
-					width: isOpen ? 260 : 0,
-					opacity: isOpen ? 1 : 0,
-				}}
-				transition={{ type: "spring", stiffness: 400, damping: 35 }}
-				className={cn(
-					"fixed lg:relative h-screen bg-sidebar border-r border-sidebar-border z-40 overflow-hidden",
-					"flex flex-col shadow-lg",
-				)}
-				style={{
-					height: "100vh",
-					maxHeight: "100vh",
-				}}
-			>
-				<div className="flex items-center justify-between p-4 border-b border-sidebar-border flex-shrink-0">
-					<div className="flex items-center gap-2">
-						<div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-							<span className="text-primary-foreground font-semibold text-sm">
-								T
+			<TooltipProvider delayDuration={300}>
+				<motion.aside
+					initial={false}
+					animate={{
+						width: isOpen ? 260 : 0,
+						opacity: isOpen ? 1 : 0,
+					}}
+					transition={{ type: "spring", stiffness: 400, damping: 35 }}
+					className={cn(
+						"fixed lg:relative h-screen bg-sidebar border-r border-sidebar-border z-40 overflow-hidden",
+						"flex flex-col shadow-lg",
+					)}
+					style={{
+						height: "100vh",
+						maxHeight: "100vh",
+					}}
+				>
+					<div className="flex items-center justify-between p-4 border-b border-sidebar-border flex-shrink-0">
+						<div className="flex items-center gap-2">
+							<div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+								<span className="text-primary-foreground font-semibold text-sm">
+									T
+								</span>
+							</div>
+							<span className="font-semibold text-sidebar-foreground">
+								TaskFlow
 							</span>
 						</div>
-						<span className="font-semibold text-sidebar-foreground">
-							TaskFlow
-						</span>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<motion.button
+									whileHover={{ scale: 1.1 }}
+									whileTap={{ scale: 0.9 }}
+									onClick={onToggle}
+									className="p-1.5 rounded-md text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+								>
+									<ChevronLeft className="w-4 h-4" />
+								</motion.button>
+							</TooltipTrigger>
+							<TooltipContent side="right" sideOffset={5}>
+								Collapse sidebar
+							</TooltipContent>
+						</Tooltip>
 					</div>
-					<motion.button
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						onClick={onToggle}
-						className="p-1.5 rounded-md text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-					>
-						<ChevronLeft className="w-4 h-4" />
-					</motion.button>
-				</div>
 
-				<nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-accent scrollbar-track-transparent">
-					{/* User Profile Section */}
-					{user ? (
-						<motion.button
-							initial={{ opacity: 0, y: -10 }}
-							animate={{ opacity: 1, y: 0 }}
-							onClick={handleProfileClick}
-							className="w-full mb-4 p-3 rounded-lg bg-sidebar-accent/30 border border-sidebar-border hover:bg-sidebar-accent/50 transition-colors"
-						>
-							<div className="flex items-center gap-3">
-								<Avatar className="h-12 w-12 border-2 border-primary/20">
-									<AvatarImage src={user.avatar} />
-									<AvatarFallback className="bg-gradient-to-br from-primary to-primary/70 text-primary-foreground text-lg font-semibold">
-										{getUserInitials(user.name)}
-									</AvatarFallback>
-								</Avatar>
-								<div className="flex-1 min-w-0 text-left">
-									<div className="flex items-center gap-2 mb-1">
-										<p className="font-semibold text-sidebar-foreground truncate">
-											{user.name}
-										</p>
-										{user.role === "admin" && (
+					<nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-accent scrollbar-track-transparent">
+						{/* User Profile Section */}
+						{user ? (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<motion.button
+										initial={{ opacity: 0, y: -10 }}
+										animate={{ opacity: 1, y: 0 }}
+										onClick={handleProfileClick}
+										className="w-full mb-4 p-3 rounded-lg bg-sidebar-accent/30 border border-sidebar-border hover:bg-sidebar-accent/50 transition-colors"
+									>
+										<div className="flex items-center gap-3">
+											<Avatar className="h-12 w-12 border-2 border-primary/20">
+												<AvatarImage src={user.avatar} />
+												<AvatarFallback className="bg-gradient-to-br from-primary to-primary/70 text-primary-foreground text-lg font-semibold">
+													{getUserInitials(user.name)}
+												</AvatarFallback>
+											</Avatar>
+											<div className="flex-1 min-w-0 text-left">
+												<div className="flex items-center gap-2 mb-1">
+													<p className="font-semibold text-sidebar-foreground truncate">
+														{user.name}
+													</p>
+													{user.role === "admin" && (
+														<Badge
+															variant="outline"
+															className="h-5 px-1.5 text-xs bg-primary/10 text-primary border-primary/30"
+														>
+															<Crown className="w-3 h-3 mr-1" />
+															Admin
+														</Badge>
+													)}
+												</div>
+												<p className="text-xs text-sidebar-foreground/60 truncate">
+													{user.email}
+												</p>
+												<div className="flex items-center gap-2 mt-2 text-xs text-sidebar-foreground/50">
+													<CheckCircle className="w-3 h-3" />
+													<span>Member since {formatJoinDate(user.createdAt)}</span>
+												</div>
+											</div>
+											<Edit className="w-4 h-4 text-sidebar-foreground/60" />
+										</div>
+									</motion.button>
+								</TooltipTrigger>
+								<TooltipContent side="right" sideOffset={5}>
+									Edit profile
+								</TooltipContent>
+							</Tooltip>
+						) : (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<motion.button
+										initial={{ opacity: 0, y: -10 }}
+										animate={{ opacity: 1, y: 0 }}
+										onClick={() => setShowLoginDialog(true)}
+										className="w-full mb-4 p-3 rounded-lg bg-sidebar-accent/30 border border-sidebar-border hover:bg-sidebar-accent/50 transition-colors"
+									>
+										<div className="flex items-center gap-3">
+											<div className="h-12 w-12 rounded-full bg-gradient-to-br from-muted to-muted/70 flex items-center justify-center">
+												<UserIcon className="w-6 h-6 text-sidebar-foreground" />
+											</div>
+											<div className="flex-1 text-left">
+												<p className="font-semibold text-sidebar-foreground">
+													Guest User
+												</p>
+												<p className="text-xs text-sidebar-foreground/60">
+													Sign in to save your data
+												</p>
+												<Badge
+													variant="outline"
+													className="mt-2 text-xs bg-warning/10 text-warning border-warning/30"
+												>
+													<Shield className="w-3 h-3 mr-1" />
+													Demo Mode
+												</Badge>
+											</div>
+											<LogIn className="w-4 h-4 text-sidebar-foreground/60" />
+										</div>
+									</motion.button>
+								</TooltipTrigger>
+								<TooltipContent side="right" sideOffset={5}>
+									Sign in to your account
+								</TooltipContent>
+							</Tooltip>
+						)}
+
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<motion.button
+									initial={{ opacity: 0, x: -20 }}
+									animate={{ opacity: 1, x: 0 }}
+									onClick={onOpenNotifications}
+									className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all"
+								>
+									<div className="flex items-center gap-3">
+										<Bell className="w-4 h-4 text-primary" />
+										<span>Notifications</span>
+									</div>
+									{notificationCount > 0 && (
+										<span className="px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium min-w-[20px] text-center">
+											{notificationCount}
+										</span>
+									)}
+								</motion.button>
+							</TooltipTrigger>
+							<TooltipContent side="right" sideOffset={5}>
+								View notifications
+							</TooltipContent>
+						</Tooltip>
+
+						<div className="h-px bg-sidebar-border my-2" />
+
+						{mainProjects.map((project, index) => {
+							const Icon = (project.icon && iconMap[project.icon]) || Hash;
+							return (
+								<Tooltip key={project.id}>
+									<TooltipTrigger asChild>
+										<motion.button
+											initial={{ opacity: 0, x: -20 }}
+											animate={{ opacity: 1, x: 0 }}
+											transition={{ delay: index * 0.05 }}
+											onClick={() => onSelectProject(project.id)}
+											className={cn(
+												"w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
+												activeProject === project.id
+													? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+													: "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+											)}
+										>
+											<Icon className="w-4 h-4" />
+											<span className="truncate">{project.name}</span>
+										</motion.button>
+									</TooltipTrigger>
+									<TooltipContent side="right" sideOffset={5}>
+										{`Switch to ${project.name}`}
+									</TooltipContent>
+								</Tooltip>
+							);
+						})}
+
+						<div className="pt-4 pb-2">
+							<div className="flex items-center justify-between px-3">
+								<p className="text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
+									Projects
+								</p>
+							</div>
+						</div>
+
+						{userProjects.map((project, index) => (
+							<Tooltip key={project.id}>
+								<TooltipTrigger asChild>
+									<motion.button
+										initial={{ opacity: 0, x: -20 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={{ delay: (mainProjects.length + index) * 0.05 }}
+										onClick={() => onSelectProject(project.id)}
+										className={cn(
+											"w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
+											activeProject === project.id
+												? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+												: "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+										)}
+									>
+										<div
+											className="w-2 h-2 rounded-full"
+											style={{ backgroundColor: project.color }}
+										/>
+										<span className="truncate">{project.name}</span>
+										{project.isShared && (
 											<Badge
 												variant="outline"
-												className="h-5 px-1.5 text-xs bg-primary/10 text-primary border-primary/30"
+												className="ml-auto h-5 px-1.5 text-xs bg-primary/10 text-primary border-primary/30"
 											>
-												<Crown className="w-3 h-3 mr-1" />
-												Admin
+												Shared
 											</Badge>
 										)}
+									</motion.button>
+								</TooltipTrigger>
+								<TooltipContent side="right" sideOffset={5}>
+									<div className="max-w-xs">
+										<p className="font-medium">{project.name}</p>
 									</div>
-									<p className="text-xs text-sidebar-foreground/60 truncate">
-										{user.email}
-									</p>
-									<div className="flex items-center gap-2 mt-2 text-xs text-sidebar-foreground/50">
-										<CheckCircle className="w-3 h-3" />
-										<span>Member since {formatJoinDate(user.createdAt)}</span>
-									</div>
-								</div>
-								<Edit className="w-4 h-4 text-sidebar-foreground/60" />
-							</div>
-						</motion.button>
-					) : (
-						<motion.button
-							initial={{ opacity: 0, y: -10 }}
-							animate={{ opacity: 1, y: 0 }}
-							onClick={() => setShowLoginDialog(true)}
-							className="w-full mb-4 p-3 rounded-lg bg-sidebar-accent/30 border border-sidebar-border hover:bg-sidebar-accent/50 transition-colors"
-						>
-							<div className="flex items-center gap-3">
-								<div className="h-12 w-12 rounded-full bg-gradient-to-br from-muted to-muted/70 flex items-center justify-center">
-									<UserIcon className="w-6 h-6 text-sidebar-foreground" />
-								</div>
-								<div className="flex-1 text-left">
-									<p className="font-semibold text-sidebar-foreground">
-										Guest User
-									</p>
-									<p className="text-xs text-sidebar-foreground/60">
-										Sign in to save your data
-									</p>
-									<Badge
-										variant="outline"
-										className="mt-2 text-xs bg-warning/10 text-warning border-warning/30"
-									>
-										<Shield className="w-3 h-3 mr-1" />
-										Demo Mode
-									</Badge>
-								</div>
-								<LogIn className="w-4 h-4 text-sidebar-foreground/60" />
-							</div>
-						</motion.button>
-					)}
+								</TooltipContent>
+							</Tooltip>
+						))}
 
-					<motion.button
-						initial={{ opacity: 0, x: -20 }}
-						animate={{ opacity: 1, x: 0 }}
-						onClick={onOpenNotifications}
-						className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all"
-					>
-						<div className="flex items-center gap-3">
-							<Bell className="w-4 h-4 text-primary" />
-							<span>Notifications</span>
-						</div>
-						{notificationCount > 0 && (
-							<span className="px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium min-w-[20px] text-center">
-								{notificationCount}
-							</span>
-						)}
-					</motion.button>
-
-					<div className="h-px bg-sidebar-border my-2" />
-
-					{mainProjects.map((project, index) => {
-						const Icon = (project.icon && iconMap[project.icon]) || Hash;
-						return (
-							<motion.button
-								key={project.id}
-								initial={{ opacity: 0, x: -20 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ delay: index * 0.05 }}
-								onClick={() => onSelectProject(project.id)}
-								className={cn(
-									"w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
-									activeProject === project.id
-										? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-										: "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
-								)}
-							>
-								<Icon className="w-4 h-4" />
-								<span className="truncate">{project.name}</span>
-							</motion.button>
-						);
-					})}
-
-					<div className="pt-4 pb-2">
-						<div className="flex items-center justify-between px-3">
-							<p className="text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
-								Projects
+						<div className="pt-4 pb-2">
+							<p className="px-3 text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
+								Quick Links
 							</p>
 						</div>
+
+						{quickLinks.map((link, index) => (
+							<Tooltip key={link.id}>
+								<TooltipTrigger asChild>
+									<motion.button
+										initial={{ opacity: 0, x: -20 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={{
+											delay:
+												(mainProjects.length + userProjects.length + index) *
+												0.05,
+										}}
+										onClick={
+											link.id === "trash"
+												? handleTrashClick
+												: link.id === "archive"
+													? handleArchiveClick
+													: link.id === "favorites"
+														? handleFavoritesClick
+														: undefined
+										}
+										className={cn(
+											"w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
+											link.id === "trash"
+												? "text-sidebar-foreground/80 hover:bg-destructive/10 hover:text-destructive"
+												: link.id === "archive"
+													? "text-sidebar-foreground/80 hover:bg-primary/10 hover:text-primary"
+													: link.id === "favorites"
+														? "text-sidebar-foreground/80 hover:bg-warning/10 hover:text-warning"
+														: "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+										)}
+									>
+										<link.icon className="w-4 h-4" style={{ color: link.color }} />
+										<div className="flex items-center justify-between flex-1">
+											<span className="truncate">{link.name}</span>
+											{link.id === "trash" && deletedTasks.length > 0 && (
+												<Badge
+													variant="destructive"
+													className="ml-2 h-5 min-w-5 px-1 text-xs"
+												>
+													{deletedTasks.length}
+												</Badge>
+											)}
+											{link.id === "archive" && archivedTasks.length > 0 && (
+												<Badge
+													variant="secondary"
+													className="ml-2 h-5 min-w-5 px-1 text-xs"
+												>
+													{archivedTasks.length}
+												</Badge>
+											)}
+											{link.id === "favorites" && favoriteTasks.length > 0 && (
+												<Badge
+													variant="outline"
+													className="ml-2 h-5 min-w-5 px-1 text-xs bg-warning/20 text-warning-foreground border-warning"
+												>
+													{favoriteTasks.length}
+												</Badge>
+											)}
+										</div>
+									</motion.button>
+								</TooltipTrigger>
+								<TooltipContent side="right" sideOffset={5}>
+									<div className="max-w-xs">
+										<p className="font-medium">{link.name}</p>
+										<p className="text-sm text-muted-foreground mt-1">
+											{link.description}
+										</p>
+										{link.id === "trash" && deletedTasks.length > 0 && (
+											<p className="text-xs text-destructive mt-1">
+												{deletedTasks.length} deleted item
+												{deletedTasks.length !== 1 ? "s" : ""}
+											</p>
+										)}
+										{link.id === "archive" && archivedTasks.length > 0 && (
+											<p className="text-xs text-primary mt-1">
+												{archivedTasks.length} archived task
+												{archivedTasks.length !== 1 ? "s" : ""}
+											</p>
+										)}
+										{link.id === "favorites" && favoriteTasks.length > 0 && (
+											<p className="text-xs text-warning mt-1">
+												{favoriteTasks.length} favorite
+												{favoriteTasks.length !== 1 ? "s" : ""}
+											</p>
+										)}
+									</div>
+								</TooltipContent>
+							</Tooltip>
+						))}
+					</nav>
+
+					<div className="p-3 border-t border-sidebar-border flex-shrink-0 space-y-2">
+						{user ? (
+							<>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<motion.button
+											whileHover={{ scale: 1.01 }}
+											whileTap={{ scale: 0.99 }}
+											onClick={handleSettingsClick}
+											className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all"
+										>
+											<Settings className="w-4 h-4" />
+											<span>Settings</span>
+										</motion.button>
+									</TooltipTrigger>
+									<TooltipContent side="right" sideOffset={5}>
+										Account settings and preferences
+									</TooltipContent>
+								</Tooltip>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<motion.button
+											whileHover={{ scale: 1.01 }}
+											whileTap={{ scale: 0.99 }}
+											onClick={handleConfirmLogout}
+											className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-destructive/10 hover:text-destructive transition-all"
+										>
+											<LogOut className="w-4 h-4" />
+											<span>Logout</span>
+										</motion.button>
+									</TooltipTrigger>
+									<TooltipContent side="right" sideOffset={5}>
+										Sign out of your account
+									</TooltipContent>
+								</Tooltip>
+							</>
+						) : (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<motion.button
+										whileHover={{ scale: 1.01 }}
+										whileTap={{ scale: 0.99 }}
+										onClick={() => setShowLoginDialog(true)}
+										className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all"
+									>
+										<LogIn className="w-4 h-4" />
+										<span>Sign In</span>
+									</motion.button>
+								</TooltipTrigger>
+								<TooltipContent side="right" sideOffset={5}>
+									Sign in to access all features
+								</TooltipContent>
+							</Tooltip>
+						)}
 					</div>
-
-					{userProjects.map((project, index) => (
-						<motion.button
-							key={project.id}
-							initial={{ opacity: 0, x: -20 }}
-							animate={{ opacity: 1, x: 0 }}
-							transition={{ delay: (mainProjects.length + index) * 0.05 }}
-							onClick={() => onSelectProject(project.id)}
-							className={cn(
-								"w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
-								activeProject === project.id
-									? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-									: "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
-							)}
-						>
-							<div
-								className="w-2 h-2 rounded-full"
-								style={{ backgroundColor: project.color }}
-							/>
-							<span className="truncate">{project.name}</span>
-							{project.isShared && (
-								<Badge
-									variant="outline"
-									className="ml-auto h-5 px-1.5 text-xs bg-primary/10 text-primary border-primary/30"
-								>
-									Shared
-								</Badge>
-							)}
-						</motion.button>
-					))}
-
-					<div className="pt-4 pb-2">
-						<p className="px-3 text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
-							Quick Links
-						</p>
-					</div>
-
-					{quickLinks.map((link, index) => (
-						<motion.button
-							key={link.id}
-							initial={{ opacity: 0, x: -20 }}
-							animate={{ opacity: 1, x: 0 }}
-							transition={{
-								delay:
-									(mainProjects.length + userProjects.length + index) * 0.05,
-							}}
-							onClick={
-								link.id === "trash"
-									? handleTrashClick
-									: link.id === "archive"
-										? handleArchiveClick
-										: link.id === "favorites"
-											? handleFavoritesClick
-											: undefined
-							}
-							className={cn(
-								"w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
-								link.id === "trash"
-									? "text-sidebar-foreground/80 hover:bg-destructive/10 hover:text-destructive"
-									: link.id === "archive"
-										? "text-sidebar-foreground/80 hover:bg-primary/10 hover:text-primary"
-										: link.id === "favorites"
-											? "text-sidebar-foreground/80 hover:bg-warning/10 hover:text-warning"
-											: "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
-							)}
-						>
-							<link.icon className="w-4 h-4" style={{ color: link.color }} />
-							<div className="flex items-center justify-between flex-1">
-								<span className="truncate">{link.name}</span>
-								{link.id === "trash" && deletedTasks.length > 0 && (
-									<Badge
-										variant="destructive"
-										className="ml-2 h-5 min-w-5 px-1 text-xs"
-									>
-										{deletedTasks.length}
-									</Badge>
-								)}
-								{link.id === "archive" && archivedTasks.length > 0 && (
-									<Badge
-										variant="secondary"
-										className="ml-2 h-5 min-w-5 px-1 text-xs"
-									>
-										{archivedTasks.length}
-									</Badge>
-								)}
-								{link.id === "favorites" && favoriteTasks.length > 0 && (
-									<Badge
-										variant="outline"
-										className="ml-2 h-5 min-w-5 px-1 text-xs bg-warning/20 text-warning-foreground border-warning"
-									>
-										{favoriteTasks.length}
-									</Badge>
-								)}
-							</div>
-						</motion.button>
-					))}
-				</nav>
-
-				<div className="p-3 border-t border-sidebar-border flex-shrink-0 space-y-2">
-					{user ? (
-						<>
-							<motion.button
-								whileHover={{ scale: 1.01 }}
-								whileTap={{ scale: 0.99 }}
-								onClick={handleSettingsClick}
-								className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all"
-							>
-								<Settings className="w-4 h-4" />
-								<span>Settings</span>
-							</motion.button>
-							<motion.button
-								whileHover={{ scale: 1.01 }}
-								whileTap={{ scale: 0.99 }}
-								onClick={handleConfirmLogout}
-								className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-destructive/10 hover:text-destructive transition-all"
-							>
-								<LogOut className="w-4 h-4" />
-								<span>Logout</span>
-							</motion.button>
-						</>
-					) : (
-						<motion.button
-							whileHover={{ scale: 1.01 }}
-							whileTap={{ scale: 0.99 }}
-							onClick={() => setShowLoginDialog(true)}
-							className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all"
-						>
-							<LogIn className="w-4 h-4" />
-							<span>Sign In</span>
-						</motion.button>
-					)}
-				</div>
-			</motion.aside>
+				</motion.aside>
+			</TooltipProvider>
 
 			{/* Login Dialog */}
 			<Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
@@ -1570,32 +1679,42 @@ export function DashboardSidebar({
 														</div>
 
 														<div className="flex items-center gap-1 flex-shrink-0">
-															<Button
-																variant="outline"
-																size="sm"
-																onClick={() => onRestoreTask?.(task.id)}
-																className="h-8 w-8 p-0"
-																title="Restore"
-															>
-																<RotateCcw className="w-4 h-4" />
-															</Button>
-															<Button
-																variant="destructive"
-																size="sm"
-																onClick={() => {
-																	if (
-																		confirm(
-																			"Permanently delete this task? This action cannot be undone.",
-																		)
-																	) {
-																		onPermanentlyDelete?.(task.id);
-																	}
-																}}
-																className="h-8 w-8 p-0"
-																title="Delete permanently"
-															>
-																<Delete className="w-4 h-4" />
-															</Button>
+															<Tooltip>
+																<TooltipTrigger asChild>
+																	<Button
+																		variant="outline"
+																		size="sm"
+																		onClick={() => onRestoreTask?.(task.id)}
+																		className="h-8 w-8 p-0"
+																	>
+																		<RotateCcw className="w-4 h-4" />
+																	</Button>
+																</TooltipTrigger>
+																<TooltipContent>Restore task</TooltipContent>
+															</Tooltip>
+															<Tooltip>
+																<TooltipTrigger asChild>
+																	<Button
+																		variant="destructive"
+																		size="sm"
+																		onClick={() => {
+																			if (
+																				confirm(
+																					"Permanently delete this task? This action cannot be undone.",
+																				)
+																			) {
+																				onPermanentlyDelete?.(task.id);
+																			}
+																		}}
+																		className="h-8 w-8 p-0"
+																	>
+																		<Delete className="w-4 h-4" />
+																	</Button>
+																</TooltipTrigger>
+																<TooltipContent>
+																	Delete permanently
+																</TooltipContent>
+															</Tooltip>
 														</div>
 													</div>
 												</motion.div>

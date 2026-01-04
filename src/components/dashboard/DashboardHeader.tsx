@@ -31,6 +31,12 @@ import {
 	DialogDescription,
 	DialogFooter,
 } from "../ui/dialog";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "../ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { useProjects } from "@/context/ProjectsContext";
@@ -164,66 +170,154 @@ export function DashboardHeader({
 	const IconComponent = getCurrentIcon();
 
 	return (
-		<>
+		<TooltipProvider delayDuration={300}>
 			<header className="sticky top-0 z-20 bg-background/80 backdrop-blur-lg border-b border-border">
 				<div className="flex items-center justify-between px-4 h-14">
 					<div className="flex items-center gap-3">
-						<motion.button
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-							onClick={onToggleSidebar}
-							className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-						>
-							<Menu className="w-5 h-5" />
-						</motion.button>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<motion.button
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+									onClick={onToggleSidebar}
+									className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+								>
+									<Menu className="w-5 h-5" />
+								</motion.button>
+							</TooltipTrigger>
+							<TooltipContent side="bottom" sideOffset={5}>
+								Toggle sidebar
+							</TooltipContent>
+						</Tooltip>
 
-						<div>
-							<motion.h1
-								key={projectName}
-								initial={{ opacity: 0, y: -10 }}
-								animate={{ opacity: 1, y: 0 }}
-								className="font-semibold text-foreground"
-							>
-								{projectName}
-							</motion.h1>
-							<p className="text-xs text-muted-foreground">
-								{taskCount.completed} of {taskCount.total} completed
-							</p>
-						</div>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<div>
+									<motion.h1
+										key={projectName}
+										initial={{ opacity: 0, y: -10 }}
+										animate={{ opacity: 1, y: 0 }}
+										className="font-semibold text-foreground cursor-default"
+									>
+										{projectName}
+									</motion.h1>
+									<p className="text-xs text-muted-foreground">
+										{taskCount.completed} of {taskCount.total} completed
+									</p>
+								</div>
+							</TooltipTrigger>
+							<TooltipContent side="bottom" sideOffset={5}>
+								<div className="max-w-xs">
+									<p className="font-medium">{projectName}</p>
+									<p className="text-sm text-muted-foreground mt-1">
+										{taskCount.completed === taskCount.total
+											? "All tasks completed! 🎉"
+											: `${taskCount.total - taskCount.completed} tasks remaining`}
+									</p>
+									{taskCount.total > 0 && (
+										<div className="mt-2">
+											<div className="flex items-center justify-between text-xs mb-1">
+												<span>Progress</span>
+												<span>
+													{Math.round(
+														(taskCount.completed / taskCount.total) * 100,
+													)}
+													%
+												</span>
+											</div>
+											<div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+												<motion.div
+													initial={{ width: 0 }}
+													animate={{
+														width: `${(taskCount.completed / taskCount.total) * 100}%`,
+													}}
+													transition={{ duration: 0.5, ease: "easeOut" }}
+													className="h-full bg-primary"
+												/>
+											</div>
+										</div>
+									)}
+								</div>
+							</TooltipContent>
+						</Tooltip>
 					</div>
 
 					<div className="flex items-center gap-1">
-						<motion.button
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-							onClick={handleCreateProjectClick}
-							className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-							title="Create new project"
-						>
-							<Plus className="w-5 h-5" />
-						</motion.button>
-						<ModeToggle />
-						<motion.button
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-							onClick={onOpenSearch}
-							className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-						>
-							<Search className="w-5 h-5" />
-						</motion.button>
-						<motion.button
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-							onClick={onOpenNotifications}
-							className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-						>
-							<Bell className="w-5 h-5" />
-							{notificationCount > 0 && (
-								<span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-medium flex items-center justify-center">
-									{notificationCount}
-								</span>
-							)}
-						</motion.button>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<motion.button
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+									onClick={handleCreateProjectClick}
+									className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+								>
+									<Plus className="w-5 h-5" />
+								</motion.button>
+							</TooltipTrigger>
+							<TooltipContent side="bottom" sideOffset={5}>
+								Create new project
+							</TooltipContent>
+						</Tooltip>
+
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<div>
+									<ModeToggle />
+								</div>
+							</TooltipTrigger>
+							<TooltipContent side="bottom" sideOffset={5}>
+								Toggle theme
+							</TooltipContent>
+						</Tooltip>
+
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<motion.button
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+									onClick={onOpenSearch}
+									className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+								>
+									<Search className="w-5 h-5" />
+								</motion.button>
+							</TooltipTrigger>
+							<TooltipContent side="bottom" sideOffset={5}>
+								Search tasks and projects
+							</TooltipContent>
+						</Tooltip>
+
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<motion.button
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+									onClick={onOpenNotifications}
+									className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+								>
+									<Bell className="w-5 h-5" />
+									{notificationCount > 0 && (
+										<span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-medium flex items-center justify-center">
+											{notificationCount}
+										</span>
+									)}
+								</motion.button>
+							</TooltipTrigger>
+							<TooltipContent side="bottom" sideOffset={5}>
+								<div className="max-w-xs">
+									<p className="font-medium">Notifications</p>
+									{notificationCount > 0 ? (
+										<p className="text-sm text-muted-foreground mt-1">
+											You have {notificationCount} unread notification
+											{notificationCount !== 1 ? "s" : ""}
+										</p>
+									) : (
+										<p className="text-sm text-muted-foreground mt-1">
+											No new notifications
+										</p>
+									)}
+								</div>
+							</TooltipContent>
+						</Tooltip>
 					</div>
 				</div>
 			</header>
@@ -288,30 +382,35 @@ export function DashboardHeader({
 									</div>
 									<div className="grid grid-cols-8 gap-2">
 										{projectColors.map((color) => (
-											<motion.button
-												key={color.value}
-												whileHover={{ scale: 1.1 }}
-												whileTap={{ scale: 0.95 }}
-												onClick={() => handleColorSelect(color.value)}
-												className={cn(
-													"w-8 h-8 rounded-full border-2 transition-all relative flex items-center justify-center",
-													projectData.color === color.value
-														? "border-foreground scale-110 ring-2 ring-offset-2 ring-offset-background ring-foreground/20"
-														: "border-transparent hover:border-foreground/30",
-												)}
-												style={{ backgroundColor: color.value }}
-												title={color.name}
-											>
-												{projectData.color === color.value && (
-													<motion.div
-														initial={{ scale: 0 }}
-														animate={{ scale: 1 }}
-														className="absolute"
+											<Tooltip key={color.value}>
+												<TooltipTrigger asChild>
+													<motion.button
+														whileHover={{ scale: 1.1 }}
+														whileTap={{ scale: 0.95 }}
+														onClick={() => handleColorSelect(color.value)}
+														className={cn(
+															"w-8 h-8 rounded-full border-2 transition-all relative flex items-center justify-center",
+															projectData.color === color.value
+																? "border-foreground scale-110 ring-2 ring-offset-2 ring-offset-background ring-foreground/20"
+																: "border-transparent hover:border-foreground/30",
+														)}
+														style={{ backgroundColor: color.value }}
 													>
-														<Check className="w-4 h-4 text-white drop-shadow-md" />
-													</motion.div>
-												)}
-											</motion.button>
+														{projectData.color === color.value && (
+															<motion.div
+																initial={{ scale: 0 }}
+																animate={{ scale: 1 }}
+																className="absolute"
+															>
+																<Check className="w-4 h-4 text-white drop-shadow-md" />
+															</motion.div>
+														)}
+													</motion.button>
+												</TooltipTrigger>
+												<TooltipContent side="top" sideOffset={5}>
+													{color.name}
+												</TooltipContent>
+											</Tooltip>
 										))}
 									</div>
 								</div>
@@ -326,23 +425,29 @@ export function DashboardHeader({
 											const Icon = iconMap[icon.icon] || Briefcase;
 											const isSelected = projectData.icon === icon.icon;
 											return (
-												<motion.button
-													key={icon.icon}
-													whileHover={{ scale: 1.05, y: -2 }}
-													whileTap={{ scale: 0.95 }}
-													onClick={() => handleIconSelect(icon.icon)}
-													className={cn(
-														"flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all",
-														isSelected
-															? "bg-primary/10 border-primary text-primary shadow-sm"
-															: "bg-muted/50 border-border hover:bg-muted",
-													)}
-												>
-													<Icon className="w-5 h-5" />
-													<span className="text-[10px] font-medium truncate w-full text-center">
-														{icon.name}
-													</span>
-												</motion.button>
+												<Tooltip key={icon.icon}>
+													<TooltipTrigger asChild>
+														<motion.button
+															whileHover={{ scale: 1.05, y: -2 }}
+															whileTap={{ scale: 0.95 }}
+															onClick={() => handleIconSelect(icon.icon)}
+															className={cn(
+																"flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all",
+																isSelected
+																	? "bg-primary/10 border-primary text-primary shadow-sm"
+																	: "bg-muted/50 border-border hover:bg-muted",
+															)}
+														>
+															<Icon className="w-5 h-5" />
+															<span className="text-[10px] font-medium truncate w-full text-center">
+																{icon.name}
+															</span>
+														</motion.button>
+													</TooltipTrigger>
+													<TooltipContent side="top" sideOffset={5}>
+														{icon.name} icon
+													</TooltipContent>
+												</Tooltip>
 											);
 										})}
 									</div>
@@ -351,26 +456,49 @@ export function DashboardHeader({
 
 							<div className="rounded-lg bg-muted/50 p-4 border border-border">
 								<div className="flex items-center gap-3">
-									<div
-										className="flex items-center justify-center w-10 h-10 rounded-lg"
-										style={{ backgroundColor: projectData.color }}
-									>
-										<IconComponent className="w-5 h-5 text-white" />
-									</div>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<div
+												className="flex items-center justify-center w-10 h-10 rounded-lg"
+												style={{ backgroundColor: projectData.color }}
+											>
+												<IconComponent className="w-5 h-5 text-white" />
+											</div>
+										</TooltipTrigger>
+										<TooltipContent>
+											Project preview with selected color and icon
+										</TooltipContent>
+									</Tooltip>
 									<div className="flex-1">
 										<div className="flex items-center gap-2 mb-1">
-											<span
-												className={cn(
-													"font-medium text-foreground",
-													!projectData.name && "text-muted-foreground italic",
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<span
+														className={cn(
+															"font-medium text-foreground truncate max-w-[200px]",
+															!projectData.name && "text-muted-foreground italic",
+														)}
+													>
+														{projectData.name || "Your project name"}
+													</span>
+												</TooltipTrigger>
+												{projectData.name && (
+													<TooltipContent>
+														{projectData.name}
+													</TooltipContent>
 												)}
-											>
-												{projectData.name || "Your project name"}
-											</span>
-											<Badge variant="outline" className="text-xs">
-												{projectIcons.find((i) => i.icon === projectData.icon)
-													?.name || "Briefcase"}
-											</Badge>
+											</Tooltip>
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<Badge variant="outline" className="text-xs">
+														{projectIcons.find((i) => i.icon === projectData.icon)
+															?.name || "Briefcase"}
+													</Badge>
+												</TooltipTrigger>
+												<TooltipContent>
+													Selected icon type
+												</TooltipContent>
+											</Tooltip>
 										</div>
 										<p className="text-xs text-muted-foreground">
 											{user
@@ -382,60 +510,83 @@ export function DashboardHeader({
 							</div>
 
 							{!user && (
-								<div className="p-3 bg-warning/10 border border-warning/20 rounded">
-									<div className="flex items-start gap-2">
-										<Bell className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
-										<div>
-											<p className="text-sm font-medium text-warning">
-												Sign In Required
-											</p>
-											<p className="text-sm text-warning/80">
-												Projects created in guest mode are temporary. Sign in to
-												save them permanently.
-											</p>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className="p-3 bg-warning/10 border border-warning/20 rounded">
+											<div className="flex items-start gap-2">
+												<Bell className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
+												<div>
+													<p className="text-sm font-medium text-warning">
+														Sign In Required
+													</p>
+													<p className="text-sm text-warning/80">
+														Projects created in guest mode are temporary. Sign in to
+														save them permanently.
+													</p>
+												</div>
+											</div>
 										</div>
-									</div>
-								</div>
+									</TooltipTrigger>
+									<TooltipContent side="top" sideOffset={5}>
+										Click "Sign In to Create" button to proceed
+									</TooltipContent>
+								</Tooltip>
 							)}
 						</div>
 
 						<DialogFooter>
-							<Button
-								variant="outline"
-								onClick={() => setShowCreateProject(false)}
-								disabled={isSubmitting}
-							>
-								Cancel
-							</Button>
-							<Button
-								onClick={handleCreateProject}
-								disabled={!projectData.name.trim() || isSubmitting || !user}
-								className="gap-2"
-							>
-								{isSubmitting ? (
-									<>
-										<motion.div
-											animate={{ rotate: 360 }}
-											transition={{
-												duration: 1,
-												repeat: Infinity,
-												ease: "linear",
-											}}
-											className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
-										/>
-										Creating...
-									</>
-								) : (
-									<>
-										<FolderPlus className="w-4 h-4" />
-										{user ? "Create Project" : "Sign In to Create"}
-									</>
-								)}
-							</Button>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Button
+										variant="outline"
+										onClick={() => setShowCreateProject(false)}
+										disabled={isSubmitting}
+									>
+										Cancel
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent>Close without saving</TooltipContent>
+							</Tooltip>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Button
+										onClick={handleCreateProject}
+										disabled={!projectData.name.trim() || isSubmitting || !user}
+										className="gap-2"
+									>
+										{isSubmitting ? (
+											<>
+												<motion.div
+													animate={{ rotate: 360 }}
+													transition={{
+														duration: 1,
+														repeat: Infinity,
+														ease: "linear",
+													}}
+													className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+												/>
+												Creating...
+											</>
+										) : (
+											<>
+												<FolderPlus className="w-4 h-4" />
+												{user ? "Create Project" : "Sign In to Create"}
+											</>
+										)}
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent>
+									{!projectData.name.trim()
+										? "Enter a project name to continue"
+										: !user
+											? "Sign in to create permanent projects"
+											: "Create new project"}
+								</TooltipContent>
+							</Tooltip>
 						</DialogFooter>
 					</motion.div>
 				</DialogContent>
 			</Dialog>
-		</>
+		</TooltipProvider>
 	);
 }

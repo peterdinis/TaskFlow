@@ -34,7 +34,7 @@ export function LoginPage() {
 				to: "/dashboard",
 			});
 		} catch (err: any) {
-			setError(err.message || "Prihlasovanie zlyhalo");
+			setError(err.message || "Login failed");
 		} finally {
 			setIsLoading(false);
 		}
@@ -44,7 +44,7 @@ export function LoginPage() {
 		<div className="min-h-screen flex items-center justify-center">
 			<div className="max-w-md w-full space-y-8 p-8 rounded-lg shadow">
 				<div>
-					<h2 className="text-3xl font-bold text-center">Prihláste sa</h2>
+					<h2 className="text-3xl font-bold text-center">Sign In</h2>
 				</div>
 
 				<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -54,7 +54,7 @@ export function LoginPage() {
 							{...register("email")}
 							type="email"
 							className="mt-1 block w-full px-3 py-2 border rounded-md"
-							placeholder="vas@email.com"
+							placeholder="your@email.com"
 						/>
 						{errors.email && (
 							<p className="text-red-600 text-sm mt-1">
@@ -64,7 +64,7 @@ export function LoginPage() {
 					</div>
 
 					<div>
-						<label className="block text-sm font-medium">Heslo</label>
+						<label className="block text-sm font-medium">Password</label>
 						<input
 							{...register("password")}
 							type="password"
@@ -84,7 +84,7 @@ export function LoginPage() {
 							type="checkbox"
 							className="h-4 w-4"
 						/>
-						<label className="ml-2 text-sm">Zapamätať si ma</label>
+						<label className="ml-2 text-sm">Remember me</label>
 					</div>
 
 					{error && (
@@ -96,7 +96,7 @@ export function LoginPage() {
 						disabled={isLoading}
 						className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
 					>
-						{isLoading ? "Prihlasujem..." : "Prihlásiť sa"}
+						{isLoading ? "Signing in..." : "Sign In"}
 					</button>
 				</form>
 			</div>

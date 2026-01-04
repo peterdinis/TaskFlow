@@ -17,6 +17,7 @@ import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { TodoProvider } from "@/context/TodoContext";
 import { NotificationProvider } from "@/context/NotificationContext";
+import { ProjectProvider } from "@/context/ProjectsContext";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -63,7 +64,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 					>
 						<AuthProvider>
 							<TodoProvider>
-								<NotificationProvider>{children}</NotificationProvider>
+								<NotificationProvider>
+									<ProjectProvider>
+										{children}
+									</ProjectProvider>
+								</NotificationProvider>
 							</TodoProvider>
 							<TanStackDevtools
 								config={{

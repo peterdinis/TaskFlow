@@ -59,12 +59,12 @@ const RegisterForm: FC = () => {
 			await auth.register(data.name, data.email, data.password);
 			setRegistrationSuccess(true);
 
-			// Automatické presmerovanie po 3 sekundách
+			// Automatic redirect after 3 seconds
 			setTimeout(() => {
 				router.navigate({ to: "/login" });
 			}, 3000);
 		} catch (err: any) {
-			setError(err.message || "Registrácia zlyhala. Skúste to prosím znova.");
+			setError(err.message || "Registration failed. Please try again.");
 			setRegistrationSuccess(false);
 		} finally {
 			setIsLoading(false);
@@ -79,13 +79,13 @@ const RegisterForm: FC = () => {
 						<Check className="h-6 w-6 text-green-600" />
 					</div>
 					<h2 className="text-2xl font-bold text-gray-900 mb-2">
-						Registrácia úspešná!
+						Registration Successful!
 					</h2>
 					<p className="text-gray-600 mb-6">
-						Váš účet bol úspešne vytvorený. Ste automaticky prihlásený.
+						Your account has been successfully created. You are automatically logged in.
 					</p>
 					<p className="text-sm text-gray-500">
-						Presmerovávam na domovskú stránku...
+						Redirecting to home page...
 					</p>
 				</div>
 			</div>
@@ -95,15 +95,15 @@ const RegisterForm: FC = () => {
 	return (
 		<div className="max-w-md w-full mx-auto p-8 bg-white rounded-lg shadow-md">
 			<div className="text-center mb-8">
-				<h1 className="text-3xl font-bold text-gray-900 mb-2">Vytvoriť účet</h1>
-				<p className="text-gray-600">Vyplňte údaje pre registráciu</p>
+				<h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+				<p className="text-gray-600">Fill in your details to register</p>
 			</div>
 
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-				{/* Meno */}
+				{/* Name */}
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">
-						Celé meno
+						Full Name
 					</label>
 					<div className="relative">
 						<User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -116,7 +116,7 @@ const RegisterForm: FC = () => {
 									? "border-red-300 focus:border-red-300"
 									: "border-gray-300 focus:border-blue-500"
 							}`}
-							placeholder="Janko Mrkvička"
+							placeholder="John Doe"
 						/>
 					</div>
 					{errors.name && (
@@ -127,7 +127,7 @@ const RegisterForm: FC = () => {
 				{/* Email */}
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">
-						Emailová adresa
+						Email Address
 					</label>
 					<div className="relative">
 						<Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -140,7 +140,7 @@ const RegisterForm: FC = () => {
 									? "border-red-300 focus:border-red-300"
 									: "border-gray-300 focus:border-blue-500"
 							}`}
-							placeholder="janko@example.com"
+							placeholder="john@example.com"
 						/>
 					</div>
 					{errors.email && (
@@ -148,10 +148,10 @@ const RegisterForm: FC = () => {
 					)}
 				</div>
 
-				{/* Heslo */}
+				{/* Password */}
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">
-						Heslo
+						Password
 					</label>
 					<div className="relative">
 						<Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -179,11 +179,11 @@ const RegisterForm: FC = () => {
 						</button>
 					</div>
 
-					{/* Indikátor sily hesla */}
+					{/* Password strength indicator */}
 					{password && (
 						<div className="mt-2">
 							<div className="flex justify-between mb-1">
-								<span className="text-sm text-gray-600">Sila hesla:</span>
+								<span className="text-sm text-gray-600">Password strength:</span>
 								<span className="text-sm font-medium">
 									{passwordStrength()}%
 								</span>
@@ -202,28 +202,28 @@ const RegisterForm: FC = () => {
 										password.length >= 8 ? "text-green-600" : "text-gray-400"
 									}
 								>
-									✓ Aspoň 8 znakov
+									✓ At least 8 characters
 								</p>
 								<p
 									className={
 										/[A-Z]/.test(password) ? "text-green-600" : "text-gray-400"
 									}
 								>
-									✓ Aspoň jedno veľké písmeno
+									✓ At least one uppercase letter
 								</p>
 								<p
 									className={
 										/[a-z]/.test(password) ? "text-green-600" : "text-gray-400"
 									}
 								>
-									✓ Aspoň jedno malé písmeno
+									✓ At least one lowercase letter
 								</p>
 								<p
 									className={
 										/[0-9]/.test(password) ? "text-green-600" : "text-gray-400"
 									}
 								>
-									✓ Aspoň jedna číslica
+									✓ At least one number
 								</p>
 							</div>
 						</div>
@@ -236,10 +236,10 @@ const RegisterForm: FC = () => {
 					)}
 				</div>
 
-				{/* Potvrdenie hesla */}
+				{/* Confirm Password */}
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">
-						Potvrdenie hesla
+						Confirm Password
 					</label>
 					<div className="relative">
 						<Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -267,7 +267,7 @@ const RegisterForm: FC = () => {
 						</button>
 					</div>
 
-					{/* Indikátor zhody hesiel */}
+					{/* Password match indicator */}
 					{confirmPassword && password && (
 						<div className="mt-2">
 							<p
@@ -278,8 +278,8 @@ const RegisterForm: FC = () => {
 								}`}
 							>
 								{password === confirmPassword
-									? "✓ Heslá sa zhodujú"
-									: "✗ Heslá sa nezhodujú"}
+									? "✓ Passwords match"
+									: "✗ Passwords do not match"}
 							</p>
 						</div>
 					)}
@@ -291,7 +291,7 @@ const RegisterForm: FC = () => {
 					)}
 				</div>
 
-				{/* Súhlas s podmienkami */}
+				{/* Terms agreement */}
 				<div>
 					<label className="flex items-start space-x-3 cursor-pointer">
 						<input
@@ -300,23 +300,23 @@ const RegisterForm: FC = () => {
 							className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
 						/>
 						<span className="text-sm text-gray-700">
-							Súhlasím s{" "}
+							I agree to the{" "}
 							<a
 								href="/terms"
 								className="text-blue-600 hover:text-blue-500 underline"
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								podmienkami používania
+								terms of use
 							</a>{" "}
-							a{" "}
+							and{" "}
 							<a
 								href="/privacy"
 								className="text-blue-600 hover:text-blue-500 underline"
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								ochranou osobných údajov
+								privacy policy
 							</a>
 						</span>
 					</label>
@@ -325,7 +325,7 @@ const RegisterForm: FC = () => {
 					)}
 				</div>
 
-				{/* Chybová správa */}
+				{/* Error message */}
 				{error && (
 					<div className="p-4 bg-red-50 border border-red-200 rounded-lg">
 						<div className="flex">
@@ -349,7 +349,7 @@ const RegisterForm: FC = () => {
 					</div>
 				)}
 
-				{/* Tlačidlo registrácie */}
+				{/* Register button */}
 				<div>
 					<button
 						type="submit"
@@ -378,49 +378,28 @@ const RegisterForm: FC = () => {
 										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 									/>
 								</svg>
-								Vytváram účet...
+								Creating account...
 							</>
 						) : (
-							"Vytvoriť účet"
+							"Create Account"
 						)}
 					</button>
 				</div>
 
-				{/* Odkaz na prihlásenie */}
+				{/* Login link */}
 				<div className="text-center pt-4 border-t border-gray-200">
 					<p className="text-sm text-gray-600">
-						Máte už účet?{" "}
+						Already have an account?{" "}
 						<button
 							type="button"
 							onClick={() => router.navigate({ to: "/login" })}
 							className="font-medium text-blue-600 hover:text-blue-500"
 						>
-							Prihláste sa
+							Sign in
 						</button>
 					</p>
 				</div>
 			</form>
-
-			{/* GDPR a bezpečnostná poznámka */}
-			<div className="mt-8 p-4 bg-gray-50 rounded-lg">
-				<h3 className="text-sm font-medium text-gray-900 mb-2">
-					Bezpečnosť vašich údajov
-				</h3>
-				<ul className="text-xs text-gray-600 space-y-1">
-					<li className="flex items-start">
-						<Check className="h-3 w-3 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-						<span>Vaše heslo je šifrované pomocou bcrypt</span>
-					</li>
-					<li className="flex items-start">
-						<Check className="h-3 w-3 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-						<span>Vaše údaje sú uložené v bezpečnej databáze</span>
-					</li>
-					<li className="flex items-start">
-						<Check className="h-3 w-3 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-						<span>Komunikácia je šifrovaná pomocou HTTPS</span>
-					</li>
-				</ul>
-			</div>
 		</div>
 	);
 };

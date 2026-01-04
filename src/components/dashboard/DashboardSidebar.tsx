@@ -505,13 +505,9 @@ export function DashboardSidebar({
 													</span>
 												</div>
 											</div>
-											<Edit className="w-4 h-4 text-sidebar-foreground/60" />
 										</div>
 									</motion.button>
 								</TooltipTrigger>
-								<TooltipContent side="right" sideOffset={5}>
-									Edit profile
-								</TooltipContent>
 							</Tooltip>
 						) : (
 							<Tooltip>
@@ -954,80 +950,6 @@ export function DashboardSidebar({
 							<LogOut className="w-4 h-4 mr-2" />
 							Sign Out
 						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
-
-			{/* Profile Edit Dialog */}
-			<Dialog open={showProfileEdit} onOpenChange={setShowProfileEdit}>
-				<DialogContent className="sm:max-w-md">
-					<DialogHeader>
-						<DialogTitle className="flex items-center gap-2">
-							<UserIcon className="w-5 h-5" />
-							Edit Profile
-						</DialogTitle>
-						<DialogDescription>
-							Update your personal information and preferences
-						</DialogDescription>
-					</DialogHeader>
-
-					<div className="space-y-4 py-4">
-						<div className="flex flex-col items-center gap-4">
-							<Avatar className="h-24 w-24 border-4 border-background">
-								<AvatarImage src={user?.avatar} />
-								<AvatarFallback className="text-2xl bg-linear-to-br from-primary to-primary/70">
-									{user?.name ? getUserInitials(user.name) : "U"}
-								</AvatarFallback>
-							</Avatar>
-							<Button variant="outline" size="sm" className="gap-2">
-								<Edit className="w-4 h-4" />
-								Change Avatar
-							</Button>
-						</div>
-
-						<div className="space-y-4">
-							<div>
-								<Label htmlFor="name">Full Name</Label>
-								<Input
-									id="name"
-									defaultValue={user?.name}
-									placeholder="Enter your name"
-								/>
-							</div>
-
-							<div>
-								<Label htmlFor="email">Email Address</Label>
-								<Input
-									id="email"
-									type="email"
-									defaultValue={user?.email}
-									placeholder="Enter your email"
-								/>
-							</div>
-
-							{user?.role === "admin" && (
-								<div className="flex items-center gap-2 p-3 bg-primary/10 rounded border border-primary/20">
-									<Crown className="w-4 h-4 text-primary" />
-									<span className="text-sm text-primary font-medium">
-										Administrator Account
-									</span>
-								</div>
-							)}
-
-							<div className="text-xs text-muted-foreground">
-								<p>
-									Member since: {user ? formatJoinDate(user.createdAt) : "N/A"}
-								</p>
-								<p>Last updated: {format(new Date(), "MMM d, yyyy")}</p>
-							</div>
-						</div>
-					</div>
-
-					<DialogFooter>
-						<Button variant="outline" onClick={() => setShowProfileEdit(false)}>
-							Cancel
-						</Button>
-						<Button>Save Changes</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>

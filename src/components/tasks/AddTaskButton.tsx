@@ -20,6 +20,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
+import { useNotifications } from "@/context/NotificationContext";
 
 interface AddTaskButtonProps {
 	onAdd: (data: any) => void;
@@ -51,6 +52,7 @@ export function AddTaskButton({
 	tags = [],
 	defaultProject,
 }: AddTaskButtonProps) {
+	const { createNotification } = useNotifications(); 
 	const [isOpen, setIsOpen] = useState(false);
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [title, setTitle] = useState("");
@@ -71,10 +73,10 @@ export function AddTaskButton({
 		}
 	}, [isOpen]);
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (title.trim()) {
-			onAdd({
+			await onAdd({
 				title: title.trim(),
 				priority,
 				dueDate,
@@ -82,13 +84,21 @@ export function AddTaskButton({
 				description: description.trim(),
 				projectId: selectedProject || undefined,
 			});
+			
+			// Pridanie notifikácie po úspešnom vytvorení úlohy
+			await createNotification(
+				"success",
+				"Task Created",
+				`Task "${title.trim()}" has been successfully created.`
+			);
+			
 			resetForm();
 		}
 	};
 
-	const handleQuickAdd = () => {
+	const handleQuickAdd = async () => {
 		if (title.trim()) {
-			onAdd({
+			await onAdd({
 				title: title.trim(),
 				priority,
 				dueDate,
@@ -96,6 +106,14 @@ export function AddTaskButton({
 				description: description.trim(),
 				projectId: selectedProject || undefined,
 			});
+			
+			// Pridanie notifikácie pre quick add
+			await createNotification(
+				"success",
+				"Task Created",
+				`Task "${title.trim()}" has been quickly added.`
+			);
+			
 			resetForm();
 		}
 	};

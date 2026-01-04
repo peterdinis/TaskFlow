@@ -11,7 +11,6 @@ import {
 	Star,
 	Archive,
 	Trash2,
-	Plus,
 	Bell,
 	Clock,
 	AlertTriangle,
@@ -25,11 +24,12 @@ import {
 	LogOut,
 	Bell as BellIcon,
 	Shield,
-	HelpCircle,
-	ExternalLink,
 	Crown,
 	CheckCircle,
 	Edit,
+	Download,
+	Upload,
+	Save,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Project, Task } from "@/types/task";
@@ -56,6 +56,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "next-themes";
 
 interface DashboardSidebarProps {
 	projects: Project[];
@@ -124,6 +125,7 @@ export function DashboardSidebar({
 	tasks = [],
 }: DashboardSidebarProps) {
 	const { user, logout } = useAuth();
+	const { theme, setTheme } = useTheme();
 	const [showTrashDialog, setShowTrashDialog] = useState(false);
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 	const [showFavoritesDialog, setShowFavoritesDialog] = useState(false);
@@ -139,6 +141,18 @@ export function DashboardSidebar({
 	const [favoritesFilter, setFavoritesFilter] = useState<
 		"all" | "completed" | "incomplete"
 	>("all");
+
+	// Settings state
+	const [notificationSettings, setNotificationSettings] = useState({
+		taskReminders: true,
+		projectUpdates: true,
+		weeklyReports: false,
+		dueDateNotifications: true,
+		mentionNotifications: true,
+	});
+	const [autoSave, setAutoSave] = useState(true);
+	const [compactMode, setCompactMode] = useState(false);
+	const [showCompletedTasks, setShowCompletedTasks] = useState(true);
 
 	const mainProjects = projects.filter(
 		(p) => p.id === "inbox" || p.id === "today",
@@ -308,6 +322,89 @@ export function DashboardSidebar({
 		return format(date, "MMM d, yyyy");
 	};
 
+	// Data management functions
+	const handleExportData = () => {
+		const data = {
+			user,
+			projects,
+			tasks,
+			archivedTasks,
+			settings: {
+				notifications: notificationSettings,
+				autoSave,
+				compactMode,
+				showCompletedTasks,
+				theme,
+			},
+			exportDate: new Date().toISOString(),
+		};
+
+		const blob = new Blob([JSON.stringify(data, null, 2)], {
+			type: "application/json",
+		});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `taskflow-backup-${format(new Date(), "yyyy-MM-dd")}.json`;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	};
+
+	const handleImportData = () => {
+		const input = document.createElement("input");
+		input.type = "file";
+		input.accept = ".json";
+		input.onchange = (e) => {
+			const file = (e.target as HTMLInputElement).files?.[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = (event) => {
+					try {
+						const data = JSON.parse(event.target?.result as string);
+						console.log("Importing data:", data);
+						alert("Data imported successfully! Please refresh the page.");
+					} catch (error) {
+						alert("Failed to import data. Invalid file format.");
+					}
+				};
+				reader.readAsText(file);
+			}
+		};
+		input.click();
+	};
+
+	const handleSaveSettings = () => {
+		// Save settings to localStorage or backend
+		const settings = {
+			notifications: notificationSettings,
+			autoSave,
+			compactMode,
+			showCompletedTasks,
+			theme,
+		};
+		localStorage.setItem("taskflow-settings", JSON.stringify(settings));
+		setShowSettingsDialog(false);
+	};
+
+	const handleResetSettings = () => {
+		if (confirm("Are you sure you want to reset all settings to default?")) {
+			setNotificationSettings({
+				taskReminders: true,
+				projectUpdates: true,
+				weeklyReports: false,
+				dueDateNotifications: true,
+				mentionNotifications: true,
+			});
+			setAutoSave(true);
+			setCompactMode(false);
+			setShowCompletedTasks(true);
+			setTheme("system");
+			localStorage.removeItem("taskflow-settings");
+		}
+	};
+
 	return (
 		<>
 			{isOpen && (
@@ -337,7 +434,7 @@ export function DashboardSidebar({
 						maxHeight: "100vh",
 					}}
 				>
-					<div className="flex items-center justify-between p-4 border-b border-sidebar-border flex-shrink-0">
+					<div className="flex items-center justify-between p-4 border-b border-sidebar-border shrink-0">
 						<div className="flex items-center gap-2">
 							<div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
 								<span className="text-primary-foreground font-semibold text-sm">
@@ -379,7 +476,7 @@ export function DashboardSidebar({
 										<div className="flex items-center gap-3">
 											<Avatar className="h-12 w-12 border-2 border-primary/20">
 												<AvatarImage src={user.avatar} />
-												<AvatarFallback className="bg-gradient-to-br from-primary to-primary/70 text-primary-foreground text-lg font-semibold">
+												<AvatarFallback className="bg-linear-to-br from-primary to-primary/70 text-primary-foreground text-lg font-semibold">
 													{getUserInitials(user.name)}
 												</AvatarFallback>
 											</Avatar>
@@ -424,7 +521,7 @@ export function DashboardSidebar({
 										className="w-full mb-4 p-3 rounded-lg bg-sidebar-accent/30 border border-sidebar-border hover:bg-sidebar-accent/50 transition-colors"
 									>
 										<div className="flex items-center gap-3">
-											<div className="h-12 w-12 rounded-full bg-gradient-to-br from-muted to-muted/70 flex items-center justify-center">
+											<div className="h-12 w-12 rounded-full bg-linear-to-br from-muted to-muted/70 flex items-center justify-center">
 												<UserIcon className="w-6 h-6 text-sidebar-foreground" />
 											</div>
 											<div className="flex-1 text-left">
@@ -465,7 +562,7 @@ export function DashboardSidebar({
 										<span>Notifications</span>
 									</div>
 									{notificationCount > 0 && (
-										<span className="px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium min-w-[20px] text-center">
+										<span className="px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium min-w-5 text-center">
 											{notificationCount}
 										</span>
 									)}
@@ -649,7 +746,7 @@ export function DashboardSidebar({
 						))}
 					</nav>
 
-					<div className="p-3 border-t border-sidebar-border flex-shrink-0 space-y-2">
+					<div className="p-3 border-t border-sidebar-border shrink-0 space-y-2">
 						{user ? (
 							<>
 								<Tooltip>
@@ -873,7 +970,7 @@ export function DashboardSidebar({
 						<div className="flex flex-col items-center gap-4">
 							<Avatar className="h-24 w-24 border-4 border-background">
 								<AvatarImage src={user?.avatar} />
-								<AvatarFallback className="text-2xl bg-gradient-to-br from-primary to-primary/70">
+								<AvatarFallback className="text-2xl bg-linear-to-br from-primary to-primary/70">
 									{user?.name ? getUserInitials(user.name) : "U"}
 								</AvatarFallback>
 							</Avatar>
@@ -945,50 +1042,6 @@ export function DashboardSidebar({
 
 					<div className="flex-1 overflow-y-auto pr-2">
 						<div className="space-y-6">
-							{/* User Profile Section */}
-							<div className="rounded-lg border border-border p-4">
-								<h3 className="font-medium text-lg mb-4 flex items-center gap-2">
-									<UserIcon className="w-5 h-5" />
-									Profile
-								</h3>
-								<div className="flex items-center gap-4 mb-6">
-									<Avatar className="h-16 w-16">
-										<AvatarImage src={user?.avatar} />
-										<AvatarFallback className="text-lg bg-gradient-to-br from-primary to-primary/70">
-											{user?.name ? getUserInitials(user.name) : "U"}
-										</AvatarFallback>
-									</Avatar>
-									<div className="flex-1">
-										<div className="flex items-center gap-2 mb-1">
-											<p className="font-medium text-lg">{user?.name}</p>
-											{user?.role === "admin" && (
-												<Badge className="bg-primary/20 text-primary border-primary/30">
-													<Crown className="w-3 h-3 mr-1" />
-													Admin
-												</Badge>
-											)}
-										</div>
-										<p className="text-sm text-muted-foreground">
-											{user?.email}
-										</p>
-										<p className="text-xs text-muted-foreground mt-1">
-											Member since:{" "}
-											{user ? formatJoinDate(user.createdAt) : "N/A"}
-										</p>
-									</div>
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => {
-											setShowSettingsDialog(false);
-											setShowProfileEdit(true);
-										}}
-									>
-										<Edit className="w-4 h-4 mr-1" />
-										Edit
-									</Button>
-								</div>
-							</div>
 
 							{/* Notification Settings */}
 							<div className="rounded-lg border border-border p-4">
@@ -1004,7 +1057,15 @@ export function DashboardSidebar({
 												Get notified about upcoming tasks
 											</p>
 										</div>
-										<Switch />
+										<Switch
+											checked={notificationSettings.taskReminders}
+											onCheckedChange={(checked) =>
+												setNotificationSettings((prev) => ({
+													...prev,
+													taskReminders: checked,
+												}))
+											}
+										/>
 									</div>
 									<div className="flex items-center justify-between">
 										<div>
@@ -1013,7 +1074,15 @@ export function DashboardSidebar({
 												Notifications for project changes
 											</p>
 										</div>
-										<Switch defaultChecked />
+										<Switch
+											checked={notificationSettings.projectUpdates}
+											onCheckedChange={(checked) =>
+												setNotificationSettings((prev) => ({
+													...prev,
+													projectUpdates: checked,
+												}))
+											}
+										/>
 									</div>
 									<div className="flex items-center justify-between">
 										<div>
@@ -1022,7 +1091,49 @@ export function DashboardSidebar({
 												Receive weekly progress reports
 											</p>
 										</div>
-										<Switch />
+										<Switch
+											checked={notificationSettings.weeklyReports}
+											onCheckedChange={(checked) =>
+												setNotificationSettings((prev) => ({
+													...prev,
+													weeklyReports: checked,
+												}))
+											}
+										/>
+									</div>
+									<div className="flex items-center justify-between">
+										<div>
+											<p className="font-medium">Due date notifications</p>
+											<p className="text-sm text-muted-foreground">
+												Get notified when tasks are due
+											</p>
+										</div>
+										<Switch
+											checked={notificationSettings.dueDateNotifications}
+											onCheckedChange={(checked) =>
+												setNotificationSettings((prev) => ({
+													...prev,
+													dueDateNotifications: checked,
+												}))
+											}
+										/>
+									</div>
+									<div className="flex items-center justify-between">
+										<div>
+											<p className="font-medium">Mention notifications</p>
+											<p className="text-sm text-muted-foreground">
+												Get notified when mentioned in comments
+											</p>
+										</div>
+										<Switch
+											checked={notificationSettings.mentionNotifications}
+											onCheckedChange={(checked) =>
+												setNotificationSettings((prev) => ({
+													...prev,
+													mentionNotifications: checked,
+												}))
+											}
+										/>
 									</div>
 								</div>
 							</div>
@@ -1033,21 +1144,42 @@ export function DashboardSidebar({
 									<FolderArchive className="w-5 h-5" />
 									Data Management
 								</h3>
-								<div className="space-y-3">
-									<Button
-										variant="outline"
-										className="w-full justify-start gap-2"
-									>
-										<Archive className="w-4 h-4" />
-										Export all data
-									</Button>
-									<Button
-										variant="outline"
-										className="w-full justify-start gap-2"
-									>
-										<RotateCcw className="w-4 h-4" />
-										Reset all data
-									</Button>
+								<div className="space-y-4">
+									<div className="flex items-center justify-between">
+										<div>
+											<p className="font-medium">Auto-save</p>
+											<p className="text-sm text-muted-foreground">
+												Automatically save changes
+											</p>
+										</div>
+										<Switch checked={autoSave} onCheckedChange={setAutoSave} />
+									</div>
+									<div className="space-y-3 pt-2">
+										<Button
+											variant="outline"
+											onClick={handleExportData}
+											className="w-full justify-start gap-2"
+										>
+											<Download className="w-4 h-4" />
+											Export all data
+										</Button>
+										<Button
+											variant="outline"
+											onClick={handleImportData}
+											className="w-full justify-start gap-2"
+										>
+											<Upload className="w-4 h-4" />
+											Import data
+										</Button>
+										<Button
+											variant="outline"
+											onClick={handleResetSettings}
+											className="w-full justify-start gap-2"
+										>
+											<RotateCcw className="w-4 h-4" />
+											Reset to defaults
+										</Button>
+									</div>
 									<div className="text-sm text-muted-foreground pt-2">
 										<p>Your data is securely stored in the cloud</p>
 										<p className="text-green-600 mt-1 flex items-center gap-1">
@@ -1057,59 +1189,18 @@ export function DashboardSidebar({
 									</div>
 								</div>
 							</div>
-
-							{/* Help & Support */}
-							<div className="rounded-lg border border-border p-4">
-								<h3 className="font-medium text-lg mb-4 flex items-center gap-2">
-									<HelpCircle className="w-5 h-5" />
-									Help & Support
-								</h3>
-								<div className="space-y-3">
-									<Button
-										variant="outline"
-										className="w-full justify-start gap-2"
-									>
-										<HelpCircle className="w-4 h-4" />
-										Documentation
-									</Button>
-									<Button
-										variant="outline"
-										className="w-full justify-start gap-2"
-									>
-										<ExternalLink className="w-4 h-4" />
-										Report an issue
-									</Button>
-									<Button
-										variant="outline"
-										className="w-full justify-start gap-2"
-									>
-										<ExternalLink className="w-4 h-4" />
-										Request a feature
-									</Button>
-								</div>
-							</div>
-
-							{/* Logout Section */}
-							<div className="rounded-lg border border-border p-4">
-								<h3 className="font-medium text-lg mb-4 text-destructive">
-									Danger Zone
-								</h3>
-								<div className="space-y-4">
-									<Button
-										variant="destructive"
-										onClick={handleConfirmLogout}
-										className="w-full gap-2"
-									>
-										<LogOut className="w-4 h-4" />
-										Logout
-									</Button>
-									<p className="text-sm text-muted-foreground">
-										You will be signed out of your account on all devices.
-									</p>
-								</div>
-							</div>
 						</div>
 					</div>
+
+					<DialogFooter>
+						<Button variant="outline" onClick={() => setShowSettingsDialog(false)}>
+							Cancel
+						</Button>
+						<Button onClick={handleSaveSettings} className="gap-2">
+							<Save className="w-4 h-4" />
+							Save Settings
+						</Button>
+					</DialogFooter>
 				</DialogContent>
 			</Dialog>
 
@@ -1301,7 +1392,7 @@ export function DashboardSidebar({
 															</div>
 														</div>
 
-														<div className="flex items-center gap-2 flex-shrink-0">
+														<div className="flex items-center gap-2 shrink-0">
 															<div className="flex items-center gap-2">
 																<Label
 																	htmlFor={`complete-${task.id}`}
@@ -1330,7 +1421,7 @@ export function DashboardSidebar({
 
 								<div className="mt-4 pt-4 border-t border-border">
 									<div className="flex items-start gap-2 text-sm text-muted-foreground">
-										<Star className="w-4 h-4 mt-0.5 flex-shrink-0 text-warning" />
+										<Star className="w-4 h-4 mt-0.5 shrink-0 text-warning" />
 										<p>
 											<span className="font-medium">Tip:</span> Favorites are
 											great for keeping important tasks at your fingertips. You
@@ -1517,7 +1608,7 @@ export function DashboardSidebar({
 															</div>
 														</div>
 
-														<div className="flex items-center gap-1 flex-shrink-0">
+														<div className="flex items-center gap-1 shrink-0">
 															<Button
 																variant="outline"
 																size="sm"
@@ -1538,7 +1629,7 @@ export function DashboardSidebar({
 
 								<div className="mt-4 pt-4 border-t border-border">
 									<div className="flex items-start gap-2 text-sm text-muted-foreground">
-										<Archive className="w-4 h-4 mt-0.5 flex-shrink-0" />
+										<Archive className="w-4 h-4 mt-0.5 shrink-0" />
 										<p>
 											<span className="font-medium">Note:</span> Archived tasks
 											are hidden from your main view but remain accessible here.
@@ -1678,7 +1769,7 @@ export function DashboardSidebar({
 															</div>
 														</div>
 
-														<div className="flex items-center gap-1 flex-shrink-0">
+														<div className="flex items-center gap-1 shrink-0">
 															<Tooltip>
 																<TooltipTrigger asChild>
 																	<Button
@@ -1725,7 +1816,7 @@ export function DashboardSidebar({
 
 								<div className="mt-4 pt-4 border-t border-border">
 									<div className="flex items-start gap-2 text-sm text-muted-foreground">
-										<AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+										<AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
 										<p>
 											<span className="font-medium">Note:</span> Items in trash
 											will be automatically deleted after 30 days. Restore items

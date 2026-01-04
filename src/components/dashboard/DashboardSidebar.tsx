@@ -462,16 +462,6 @@ export function DashboardSidebar({
 							<p className="text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
 								Projects
 							</p>
-							{user && (
-								<motion.button
-									whileHover={{ scale: 1.1 }}
-									whileTap={{ scale: 0.9 }}
-									className="p-1 rounded text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-									title="Create new project"
-								>
-									<Plus className="w-3 h-3" />
-								</motion.button>
-							)}
 						</div>
 					</div>
 

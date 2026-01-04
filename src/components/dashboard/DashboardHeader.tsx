@@ -13,6 +13,10 @@ import {
 	Target,
 	Star,
 	Briefcase,
+	Inbox,
+	User,
+	Tag,
+	Check,
 } from "lucide-react";
 import { ModeToggle } from "../shared/ModeToggle";
 import { Button } from "../ui/button";
@@ -27,6 +31,9 @@ import {
 	DialogDescription,
 	DialogFooter,
 } from "../ui/dialog";
+import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
+import { useProjects } from "@/context/ProjectsContext";
 
 interface DashboardHeaderProps {
 	projectName: string;
@@ -35,29 +42,44 @@ interface DashboardHeaderProps {
 	onOpenSearch: () => void;
 	onOpenNotifications: () => void;
 	notificationCount?: number;
-	onCreateProject?: (projectData: {
-		name: string;
-		color: string;
-		icon: string;
-	}) => void;
 }
 
+// Definícia ikonového mapovania
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+	Inbox,
+	Calendar,
+	Briefcase,
+	User,
+	Star,
+	Tag,
+	FolderPlus,
+	Book,
+	Target,
+};
+
+// Farbové možnosti pre projekt
 const projectColors = [
-	{ name: "Blue", value: "hsl(210, 100%, 50%)" },
-	{ name: "Green", value: "hsl(142, 76%, 36%)" },
-	{ name: "Red", value: "hsl(0, 84%, 60%)" },
-	{ name: "Purple", value: "hsl(280, 65%, 60%)" },
-	{ name: "Orange", value: "hsl(24, 95%, 53%)" },
-	{ name: "Pink", value: "hsl(330, 81%, 60%)" },
+	{ name: "Blue", value: "#3B82F6" },
+	{ name: "Green", value: "#10B981" },
+	{ name: "Yellow", value: "#F59E0B" },
+	{ name: "Red", value: "#EF4444" },
+	{ name: "Purple", value: "#8B5CF6" },
+	{ name: "Pink", value: "#EC4899" },
+	{ name: "Cyan", value: "#06B6D4" },
+	{ name: "Lime", value: "#84CC16" },
 ];
 
+// Ikony pre projekt
 const projectIcons = [
-	{ name: "Briefcase", icon: "Briefcase", component: Briefcase },
-	{ name: "Folder", icon: "Folder", component: FolderPlus },
-	{ name: "Calendar", icon: "Calendar", component: Calendar },
-	{ name: "Book", icon: "Book", component: Book },
-	{ name: "Target", icon: "Target", component: Target },
-	{ name: "Star", icon: "Star", component: Star },
+	{ name: "Briefcase", icon: "Briefcase" },
+	{ name: "User", icon: "User" },
+	{ name: "Calendar", icon: "Calendar" },
+	{ name: "Inbox", icon: "Inbox" },
+	{ name: "Star", icon: "Star" },
+	{ name: "Tag", icon: "Tag" },
+	{ name: "Folder", icon: "FolderPlus" },
+	{ name: "Book", icon: "Book" },
+	{ name: "Target", icon: "Target" },
 ];
 
 export function DashboardHeader({
@@ -67,8 +89,9 @@ export function DashboardHeader({
 	onOpenSearch,
 	onOpenNotifications,
 	notificationCount = 0,
-	onCreateProject,
 }: DashboardHeaderProps) {
+	const { user } = useAuth();
+	const { createProject } = useProjects();
 	const [showCreateProject, setShowCreateProject] = useState(false);
 	const [projectData, setProjectData] = useState({
 		name: "",
@@ -76,27 +99,69 @@ export function DashboardHeader({
 		icon: "Briefcase",
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [projectError, setProjectError] = useState("");
 
 	const handleCreateProject = async () => {
-		if (!projectData.name.trim()) return;
+		if (!projectData.name.trim()) {
+			setProjectError("Project name is required");
+			return;
+		}
+
+		if (!user) {
+			setProjectError("You must be logged in to create projects");
+			return;
+		}
 
 		setIsSubmitting(true);
+		setProjectError("");
+
 		try {
-			if (onCreateProject) {
-				await onCreateProject(projectData);
-			}
-			setShowCreateProject(false);
+			await createProject({
+				name: projectData.name.trim(),
+				type: "user",
+				color: projectData.color,
+				icon: projectData.icon,
+			});
+
+			// Reset a zatvorenie dialógu
 			setProjectData({
 				name: "",
 				color: projectColors[0].value,
 				icon: "Briefcase",
 			});
+			setShowCreateProject(false);
 		} catch (error) {
-			console.error("Failed to create project:", error);
+			setProjectError(
+				error instanceof Error ? error.message : "Failed to create project",
+			);
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
+
+	const handleCreateProjectClick = () => {
+		if (!user) {
+			setProjectError("Please sign in to create projects");
+			setShowCreateProject(true);
+		} else {
+			setProjectError("");
+			setShowCreateProject(true);
+		}
+	};
+
+	const handleColorSelect = (color: string) => {
+		setProjectData({ ...projectData, color });
+	};
+
+	const handleIconSelect = (icon: string) => {
+		setProjectData({ ...projectData, icon });
+	};
+
+	const getCurrentIcon = () => {
+		return iconMap[projectData.icon] || Briefcase;
+	};
+
+	const IconComponent = getCurrentIcon();
 
 	return (
 		<>
@@ -131,7 +196,7 @@ export function DashboardHeader({
 						<motion.button
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
-							onClick={() => setShowCreateProject(true)}
+							onClick={handleCreateProjectClick}
 							className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
 							title="Create new project"
 						>
@@ -180,7 +245,7 @@ export function DashboardHeader({
 										Create New Project
 									</DialogTitle>
 									<DialogDescription>
-										Organize your tasks into projects
+										Organize your tasks with a new project
 									</DialogDescription>
 								</div>
 							</div>
@@ -193,14 +258,26 @@ export function DashboardHeader({
 								</Label>
 								<Input
 									id="project-name"
-									placeholder="e.g., Marketing Campaign"
+									placeholder="e.g., Work Projects, Personal Goals..."
 									value={projectData.name}
-									onChange={(e) =>
-										setProjectData({ ...projectData, name: e.target.value })
-									}
-									className="h-11"
+									onChange={(e) => {
+										setProjectData({ ...projectData, name: e.target.value });
+										setProjectError(""); // Clear error when user types
+									}}
+									className={cn(
+										"h-11",
+										projectError && "border-destructive focus-visible:ring-destructive",
+									)}
 									autoFocus
+									onKeyDown={(e) => {
+										if (e.key === "Enter" && projectData.name.trim() && user) {
+											handleCreateProject();
+										}
+									}}
 								/>
+								{projectError && (
+									<p className="text-sm text-destructive">{projectError}</p>
+								)}
 							</div>
 
 							<div className="space-y-6">
@@ -209,23 +286,19 @@ export function DashboardHeader({
 										<Palette className="w-4 h-4 text-muted-foreground" />
 										<Label className="text-sm font-medium">Color</Label>
 									</div>
-									<div className="grid grid-cols-6 gap-3">
+									<div className="grid grid-cols-8 gap-2">
 										{projectColors.map((color) => (
 											<motion.button
 												key={color.value}
 												whileHover={{ scale: 1.1 }}
 												whileTap={{ scale: 0.95 }}
-												onClick={() =>
-													setProjectData({ ...projectData, color: color.value })
-												}
-												className={`
-                          w-9 h-9 rounded-full border-2 transition-all relative
-                          ${
-														projectData.color === color.value
-															? "border-foreground scale-110"
-															: "border-transparent hover:border-foreground/50"
-													}
-                        `}
+												onClick={() => handleColorSelect(color.value)}
+												className={cn(
+													"w-8 h-8 rounded-full border-2 transition-all relative flex items-center justify-center",
+													projectData.color === color.value
+														? "border-foreground scale-110 ring-2 ring-offset-2 ring-offset-background ring-foreground/20"
+														: "border-transparent hover:border-foreground/30",
+												)}
 												style={{ backgroundColor: color.value }}
 												title={color.name}
 											>
@@ -233,9 +306,9 @@ export function DashboardHeader({
 													<motion.div
 														initial={{ scale: 0 }}
 														animate={{ scale: 1 }}
-														className="absolute inset-0 flex items-center justify-center"
+														className="absolute"
 													>
-														<div className="w-4 h-4 rounded-full bg-white/20" />
+														<Check className="w-4 h-4 text-white drop-shadow-md" />
 													</motion.div>
 												)}
 											</motion.button>
@@ -248,28 +321,25 @@ export function DashboardHeader({
 										<Hash className="w-4 h-4 text-muted-foreground" />
 										<Label className="text-sm font-medium">Icon</Label>
 									</div>
-									<div className="grid grid-cols-6 gap-3">
+									<div className="grid grid-cols-5 gap-2">
 										{projectIcons.map((icon) => {
-											const IconComponent = icon.component;
+											const Icon = iconMap[icon.icon] || Briefcase;
+											const isSelected = projectData.icon === icon.icon;
 											return (
 												<motion.button
 													key={icon.icon}
 													whileHover={{ scale: 1.05, y: -2 }}
 													whileTap={{ scale: 0.95 }}
-													onClick={() =>
-														setProjectData({ ...projectData, icon: icon.icon })
-													}
-													className={`
-                            flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all
-                            ${
-															projectData.icon === icon.icon
-																? "bg-primary/10 border-primary text-primary shadow-sm"
-																: "bg-muted/50 border-border hover:bg-muted"
-														}
-                          `}
+													onClick={() => handleIconSelect(icon.icon)}
+													className={cn(
+														"flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all",
+														isSelected
+															? "bg-primary/10 border-primary text-primary shadow-sm"
+															: "bg-muted/50 border-border hover:bg-muted",
+													)}
 												>
-													<IconComponent className="w-5 h-5" />
-													<span className="text-[10px] font-medium">
+													<Icon className="w-5 h-5" />
+													<span className="text-[10px] font-medium truncate w-full text-center">
 														{icon.name}
 													</span>
 												</motion.button>
@@ -285,17 +355,17 @@ export function DashboardHeader({
 										className="flex items-center justify-center w-10 h-10 rounded-lg"
 										style={{ backgroundColor: projectData.color }}
 									>
-										{(() => {
-											const IconComponent =
-												projectIcons.find((i) => i.icon === projectData.icon)
-													?.component || Briefcase;
-											return <IconComponent className="w-5 h-5 text-white" />;
-										})()}
+										<IconComponent className="w-5 h-5 text-white" />
 									</div>
 									<div className="flex-1">
 										<div className="flex items-center gap-2 mb-1">
-											<span className="font-medium text-foreground">
-												{projectData.name || "New Project"}
+											<span
+												className={cn(
+													"font-medium text-foreground",
+													!projectData.name && "text-muted-foreground italic",
+												)}
+											>
+												{projectData.name || "Your project name"}
 											</span>
 											<Badge variant="outline" className="text-xs">
 												{projectIcons.find((i) => i.icon === projectData.icon)
@@ -303,23 +373,43 @@ export function DashboardHeader({
 											</Badge>
 										</div>
 										<p className="text-xs text-muted-foreground">
-											Preview of your project
+											{user
+												? "Project will be saved to your account"
+												: "Sign in to save this project"}
 										</p>
 									</div>
 								</div>
 							</div>
+
+							{!user && (
+								<div className="p-3 bg-warning/10 border border-warning/20 rounded">
+									<div className="flex items-start gap-2">
+										<Bell className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
+										<div>
+											<p className="text-sm font-medium text-warning">
+												Sign In Required
+											</p>
+											<p className="text-sm text-warning/80">
+												Projects created in guest mode are temporary. Sign in to
+												save them permanently.
+											</p>
+										</div>
+									</div>
+								</div>
+							)}
 						</div>
 
 						<DialogFooter>
 							<Button
 								variant="outline"
 								onClick={() => setShowCreateProject(false)}
+								disabled={isSubmitting}
 							>
 								Cancel
 							</Button>
 							<Button
 								onClick={handleCreateProject}
-								disabled={!projectData.name.trim() || isSubmitting}
+								disabled={!projectData.name.trim() || isSubmitting || !user}
 								className="gap-2"
 							>
 								{isSubmitting ? (
@@ -338,7 +428,7 @@ export function DashboardHeader({
 								) : (
 									<>
 										<FolderPlus className="w-4 h-4" />
-										Create Project
+										{user ? "Create Project" : "Sign In to Create"}
 									</>
 								)}
 							</Button>

@@ -59,11 +59,13 @@ export function SearchModal({
 
 	// Filter tasks based on search query and filters
 	const filteredTasks = tasks.filter((task) => {
+		const queryLower = query.toLowerCase().trim();
 		const matchesSearch =
-			task.title.toLowerCase().includes(query.toLowerCase()) ||
-			task.description?.toLowerCase().includes(query.toLowerCase()) ||
+			!queryLower ||
+			task.title.toLowerCase().includes(queryLower) ||
+			task.description?.toLowerCase().includes(queryLower) ||
 			task.tags?.some((tag: string) =>
-				tag.toLowerCase().includes(query.toLowerCase()),
+				tag.toLowerCase().includes(queryLower),
 			);
 
 		const matchesCategory =
@@ -166,6 +168,7 @@ export function SearchModal({
 						exit={{ opacity: 0, scale: 0.95, y: -20 }}
 						transition={{ type: "spring", stiffness: 400, damping: 30 }}
 						className="fixed top-[10vh] left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4"
+						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="bg-card rounded-lg shadow-2xl border border-border overflow-hidden">
 							{/* Header */}

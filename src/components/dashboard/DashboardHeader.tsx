@@ -323,7 +323,7 @@ export function DashboardHeader({
 			</header>
 
 			<Dialog open={showCreateProject} onOpenChange={setShowCreateProject}>
-				<DialogContent className="sm:max-w-[500px]">
+				<DialogContent className="sm:max-w-125">
 					<motion.div
 						initial={{ scale: 0.95, opacity: 0 }}
 						animate={{ scale: 1, opacity: 1 }}
@@ -476,7 +476,7 @@ export function DashboardHeader({
 												<TooltipTrigger asChild>
 													<span
 														className={cn(
-															"font-medium text-foreground truncate max-w-[200px]",
+															"font-medium text-foreground truncate max-w-50",
 															!projectData.name &&
 																"text-muted-foreground italic",
 														)}
@@ -513,7 +513,7 @@ export function DashboardHeader({
 									<TooltipTrigger asChild>
 										<div className="p-3 bg-warning/10 border border-warning/20 rounded">
 											<div className="flex items-start gap-2">
-												<Bell className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
+												<Bell className="w-4 h-4 text-warning mt-0.5 shrink-0" />
 												<div>
 													<p className="text-sm font-medium text-warning">
 														Sign In Required

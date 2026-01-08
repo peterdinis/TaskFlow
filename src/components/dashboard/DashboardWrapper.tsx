@@ -104,6 +104,13 @@ const DashboardWrapper: FC = () => {
 				onSelectTask={(id) => {
 					console.log("Selected task:", id);
 				}}
+				onDeleteTask={deleteTask}
+				onToggleComplete={toggleTask}
+				projects={projects.map((p) => ({
+					id: p.id,
+					name: p.name,
+					color: p.color || "#000000",
+				}))}
 			/>
 
 			<NotificationsModal

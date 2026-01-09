@@ -22,6 +22,9 @@ interface Task {
 	tags?: string[];
 	dueDate?: Date;
 	createdAt?: Date;
+	isFavorite?: boolean;
+	isArchived?: boolean;
+	deletedAt?: Date;
 }
 
 interface Project {
@@ -58,6 +61,10 @@ interface TodoContextType {
 	}) => Promise<string>;
 	updateTodo: (id: string, updates: any) => Promise<void>;
 	toggleTodo: (id: string) => Promise<void>;
+	toggleFavorite: (id: string) => Promise<void>;
+	toggleArchive: (id: string) => Promise<void>;
+	moveToTrash: (id: string) => Promise<void>;
+	restoreFromTrash: (id: string) => Promise<void>;
 	deleteTodo: (id: string) => Promise<void>;
 	deleteCompletedTodos: () => Promise<void>;
 
@@ -109,6 +116,10 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 	const createTodoMutation = useMutation(api.todos.createTodo);
 	const updateTodoMutation = useMutation(api.todos.updateTodo);
 	const toggleTodoMutation = useMutation(api.todos.toggleTodoCompletion);
+	const toggleFavoriteMutation = useMutation(api.todos.toggleFavorite);
+	const toggleArchiveMutation = useMutation(api.todos.toggleArchive);
+	const moveToTrashMutation = useMutation(api.todos.moveToTrash);
+	const restoreFromTrashMutation = useMutation(api.todos.restoreFromTrash);
 	const deleteTodoMutation = useMutation(api.todos.deleteTodo);
 	const clearCompletedMutation = useMutation(api.todos.deleteCompletedTodos);
 
@@ -136,6 +147,9 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 				labelId: t.labelId,
 				tags: t.tags,
 				dueDate: t.dueDate ? new Date(t.dueDate) : undefined,
+				isFavorite: t.isFavorite ?? false,
+				isArchived: t.isArchived ?? false,
+				deletedAt: t.deletedAt ? new Date(t.deletedAt) : undefined,
 			}));
 			setTasks(mappedTasks);
 
@@ -233,6 +247,22 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 		await toggleTodoMutation({ id: id as Id<"todos"> });
 	};
 
+	const toggleFavorite = async (id: string) => {
+		await toggleFavoriteMutation({ id: id as Id<"todos"> });
+	};
+
+	const toggleArchive = async (id: string) => {
+		await toggleArchiveMutation({ id: id as Id<"todos"> });
+	};
+
+	const moveToTrash = async (id: string) => {
+		await moveToTrashMutation({ id: id as Id<"todos"> });
+	};
+
+	const restoreFromTrash = async (id: string) => {
+		await restoreFromTrashMutation({ id: id as Id<"todos"> });
+	};
+
 	const deleteTodo = async (id: string) => {
 		await deleteTodoMutation({ id: id as Id<"todos"> });
 	};
@@ -284,6 +314,10 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 		addTodo,
 		updateTodo,
 		toggleTodo,
+		toggleFavorite,
+		toggleArchive,
+		moveToTrash,
+		restoreFromTrash,
 		deleteTodo,
 		deleteCompletedTodos,
 		addProject,

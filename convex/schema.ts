@@ -42,6 +42,9 @@ export default defineSchema({
         dueDate: v.number(),
         priority: v.optional(v.float64()),
         isCompleted: v.boolean(),
+        isFavorite: v.optional(v.boolean()),
+        isArchived: v.optional(v.boolean()),
+        deletedAt: v.optional(v.number()),
         tags: v.optional(v.array(v.string())),
         embedding: v.optional(v.array(v.float64())),
     }).vectorIndex("by_embedding", {

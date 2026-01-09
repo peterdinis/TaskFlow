@@ -13,7 +13,6 @@ import type * as auth_internal from "../auth_internal.js";
 import type * as labels from "../labels.js";
 import type * as notifications from "../notifications.js";
 import type * as projects from "../projects.js";
-import type * as search from "../search.js";
 import type * as subTodos from "../subTodos.js";
 import type * as todos from "../todos.js";
 
@@ -29,7 +28,6 @@ declare const fullApi: ApiFromModules<{
   labels: typeof labels;
   notifications: typeof notifications;
   projects: typeof projects;
-  search: typeof search;
   subTodos: typeof subTodos;
   todos: typeof todos;
 }>;

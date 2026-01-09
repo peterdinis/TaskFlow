@@ -14,6 +14,8 @@ export const createTodo = mutation({
     dueDate: v.number(),
     priority: v.optional(v.float64()),
     isCompleted: v.optional(v.boolean()),
+    isFavorite: v.optional(v.boolean()),
+    isArchived: v.optional(v.boolean()),
     tags: v.optional(v.array(v.string())),
     embedding: v.optional(v.array(v.float64())),
   },
@@ -28,6 +30,8 @@ export const createTodo = mutation({
       dueDate: args.dueDate,
       priority: args.priority,
       isCompleted: args.isCompleted,
+      isFavorite: args.isFavorite,
+      isArchived: args.isArchived,
       tags: args.tags,
       embedding: args.embedding,
     })
@@ -41,6 +45,8 @@ export const createTodo = mutation({
       dueDate: validated.dueDate,
       priority: validated.priority,
       isCompleted: validated.isCompleted ?? false,
+      isFavorite: validated.isFavorite ?? false,
+      isArchived: validated.isArchived ?? false,
       tags: validated.tags,
       embedding: validated.embedding,
     })
@@ -187,6 +193,9 @@ export const updateTodo = mutation({
     dueDate: v.optional(v.number()),
     priority: v.optional(v.float64()),
     isCompleted: v.optional(v.boolean()),
+    isFavorite: v.optional(v.boolean()),
+    isArchived: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
     projectId: v.optional(v.id("projects")),
     labelId: v.optional(v.id("labels")),
     tags: v.optional(v.array(v.string())),
@@ -203,6 +212,9 @@ export const updateTodo = mutation({
       dueDate: args.dueDate,
       priority: args.priority,
       isCompleted: args.isCompleted,
+      isFavorite: args.isFavorite,
+      isArchived: args.isArchived,
+      deletedAt: args.deletedAt,
       projectId: args.projectId,
       labelId: args.labelId,
       tags: args.tags,
@@ -241,7 +253,71 @@ export const toggleTodoCompletion = mutation({
   },
 })
 
-// DELETE - Delete a todo
+// UPDATE - Toggle favorite status
+export const toggleFavorite = mutation({
+  args: { id: v.id("todos") },
+  handler: async (ctx, args) => {
+    const todo = await ctx.db.get(args.id)
+    if (!todo) {
+      throw new Error("Todo not found")
+    }
+
+    await ctx.db.patch(args.id, {
+      isFavorite: !(todo.isFavorite ?? false),
+    })
+    return args.id
+  },
+})
+
+// UPDATE - Toggle archive status
+export const toggleArchive = mutation({
+  args: { id: v.id("todos") },
+  handler: async (ctx, args) => {
+    const todo = await ctx.db.get(args.id)
+    if (!todo) {
+      throw new Error("Todo not found")
+    }
+
+    await ctx.db.patch(args.id, {
+      isArchived: !(todo.isArchived ?? false),
+    })
+    return args.id
+  },
+})
+
+// UPDATE - Move to trash (soft delete)
+export const moveToTrash = mutation({
+  args: { id: v.id("todos") },
+  handler: async (ctx, args) => {
+    const todo = await ctx.db.get(args.id)
+    if (!todo) {
+      throw new Error("Todo not found")
+    }
+
+    await ctx.db.patch(args.id, {
+      deletedAt: Date.now(),
+    })
+    return args.id
+  },
+})
+
+// UPDATE - Restore from trash
+export const restoreFromTrash = mutation({
+  args: { id: v.id("todos") },
+  handler: async (ctx, args) => {
+    const todo = await ctx.db.get(args.id)
+    if (!todo) {
+      throw new Error("Todo not found")
+    }
+
+    await ctx.db.patch(args.id, {
+      deletedAt: undefined,
+    })
+    return args.id
+  },
+})
+
+// DELETE - Delete a todo (permanent delete)
 export const deleteTodo = mutation({
   args: { id: v.id("todos") },
   handler: async (ctx, args) => {

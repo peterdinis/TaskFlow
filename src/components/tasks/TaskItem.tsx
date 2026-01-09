@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Trash2, Flag } from "lucide-react";
+import { Trash2, Flag, Star, Archive, MoreVertical } from "lucide-react";
 import { Task, Priority } from "@/types/task";
 import { cn } from "@/lib/utils";
 import {
@@ -7,6 +7,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
+	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { TaskCheckbox } from "./TaskCheckbox";
 
@@ -15,6 +16,9 @@ interface TaskItemProps {
 	onToggle: () => void;
 	onDelete: () => void;
 	onUpdatePriority: (priority: Priority) => void;
+	onToggleFavorite?: () => void;
+	onToggleArchive?: () => void;
+	onMoveToTrash?: () => void;
 }
 
 const priorityOptions: { value: Priority; label: string; color: string }[] = [
@@ -29,6 +33,9 @@ export function TaskItem({
 	onToggle,
 	onDelete,
 	onUpdatePriority,
+	onToggleFavorite,
+	onToggleArchive,
+	onMoveToTrash,
 }: TaskItemProps) {
 	return (
 		<motion.div
@@ -64,6 +71,30 @@ export function TaskItem({
 				</motion.span>
 
 				<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+					{/* Favorite Button */}
+					{onToggleFavorite && (
+						<motion.button
+							whileHover={{ scale: 1.1 }}
+							whileTap={{ scale: 0.9 }}
+							onClick={onToggleFavorite}
+							className={cn(
+								"p-1.5 rounded-md transition-colors",
+								task.isFavorite
+									? "text-yellow-500 hover:text-yellow-600 hover:bg-yellow-500/10"
+									: "text-muted-foreground hover:text-yellow-500 hover:bg-muted",
+							)}
+							title={task.isFavorite ? "Remove from favorites" : "Add to favorites"}
+						>
+							<Star
+								className={cn(
+									"w-4 h-4",
+									task.isFavorite && "fill-current",
+								)}
+							/>
+						</motion.button>
+					)}
+
+					{/* Priority Dropdown */}
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<motion.button
@@ -76,6 +107,7 @@ export function TaskItem({
 									task.priority === "low" && "text-priority-low",
 									task.priority === "none" && "text-muted-foreground",
 								)}
+								title="Set priority"
 							>
 								<Flag className="w-4 h-4" />
 							</motion.button>
@@ -94,14 +126,50 @@ export function TaskItem({
 						</DropdownMenuContent>
 					</DropdownMenu>
 
-					<motion.button
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						onClick={onDelete}
-						className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-					>
-						<Trash2 className="w-4 h-4" />
-					</motion.button>
+					{/* Actions Dropdown */}
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<motion.button
+								whileHover={{ scale: 1.1 }}
+								whileTap={{ scale: 0.9 }}
+								className="p-1.5 rounded-md text-muted-foreground hover:bg-muted transition-colors"
+								title="More options"
+							>
+								<MoreVertical className="w-4 h-4" />
+							</motion.button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-40 bg-popover">
+							{onToggleArchive && (
+								<DropdownMenuItem
+									onClick={onToggleArchive}
+									className="flex items-center gap-2 cursor-pointer"
+								>
+									<Archive className="w-4 h-4" />
+									{task.isArchived ? "Unarchive" : "Archive"}
+								</DropdownMenuItem>
+							)}
+							{onMoveToTrash && !task.deletedAt && (
+								<>
+									{onToggleArchive && <DropdownMenuSeparator />}
+									<DropdownMenuItem
+										onClick={onMoveToTrash}
+										className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+									>
+										<Trash2 className="w-4 h-4" />
+										Move to Trash
+									</DropdownMenuItem>
+								</>
+							)}
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								onClick={onDelete}
+								className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+							>
+								<Trash2 className="w-4 h-4" />
+								Delete Permanently
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</div>
 			</div>
 		</motion.div>

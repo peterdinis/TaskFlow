@@ -18,6 +18,9 @@ const DashboardWrapper: FC = () => {
 		setActiveProject,
 		addTask,
 		toggleTask,
+		toggleFavorite,
+		toggleArchive,
+		moveToTrash,
 		deleteTask,
 		updateTaskPriority,
 		taskCount,
@@ -81,6 +84,9 @@ const DashboardWrapper: FC = () => {
 							onToggle={toggleTask}
 							onDelete={deleteTask}
 							onUpdatePriority={updateTaskPriority}
+							onToggleFavorite={toggleFavorite}
+							onToggleArchive={toggleArchive}
+							onMoveToTrash={moveToTrash}
 						/>
 					</div>
 				</div>

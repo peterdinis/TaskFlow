@@ -83,13 +83,12 @@ export function TaskItem({
 									? "text-yellow-500 hover:text-yellow-600 hover:bg-yellow-500/10"
 									: "text-muted-foreground hover:text-yellow-500 hover:bg-muted",
 							)}
-							title={task.isFavorite ? "Remove from favorites" : "Add to favorites"}
+							title={
+								task.isFavorite ? "Remove from favorites" : "Add to favorites"
+							}
 						>
 							<Star
-								className={cn(
-									"w-4 h-4",
-									task.isFavorite && "fill-current",
-								)}
+								className={cn("w-4 h-4", task.isFavorite && "fill-current")}
 							/>
 						</motion.button>
 					)}

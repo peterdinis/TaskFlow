@@ -78,9 +78,7 @@ export function SearchModal({
 				!queryLower ||
 				taskTitle.toLowerCase().includes(queryLower) ||
 				taskDescription.toLowerCase().includes(queryLower) ||
-				taskTags.some((tag: string) =>
-					tag.toLowerCase().includes(queryLower),
-				);
+				taskTags.some((tag: string) => tag.toLowerCase().includes(queryLower));
 
 			const matchesCategory =
 				selectedCategory === "all" ||

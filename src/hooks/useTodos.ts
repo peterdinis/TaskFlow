@@ -1,8 +1,8 @@
 import { useTodo } from "@/context/TodoContext";
-import { Priority, Task, Project } from "@/types/task"; // Import from your existing types
+import { Priority, Task, Project } from "@/types/task";
 import { useCallback } from "react";
 
-export function useTasks() {
+export function useTodos() {
 	const {
 		filteredTodos,
 		projects,

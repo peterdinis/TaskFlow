@@ -9,9 +9,9 @@ import {
 	DropdownMenuTrigger,
 	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { TaskCheckbox } from "./TaskCheckbox";
+import { TodoCheckbox } from "./TodoCheckbox";
 
-interface TaskItemProps {
+interface TodoItemProps {
 	task: Task;
 	onToggle: () => void;
 	onDelete: () => void;
@@ -28,7 +28,7 @@ const priorityOptions: { value: Priority; label: string; color: string }[] = [
 	{ value: "none", label: "None", color: "text-muted-foreground" },
 ];
 
-export function TaskItem({
+export function TodoItem({
 	task,
 	onToggle,
 	onDelete,
@@ -36,7 +36,7 @@ export function TaskItem({
 	onToggleFavorite,
 	onToggleArchive,
 	onMoveToTrash,
-}: TaskItemProps) {
+}: TodoItemProps) {
 	return (
 		<motion.div
 			layout
@@ -54,7 +54,7 @@ export function TaskItem({
 					task.completed && "opacity-60",
 				)}
 			>
-				<TaskCheckbox
+				<TodoCheckbox
 					checked={task.completed}
 					priority={task.priority}
 					onToggle={onToggle}
@@ -144,7 +144,7 @@ export function TaskItem({
 									className="flex items-center gap-2 cursor-pointer"
 								>
 									<Archive className="w-4 h-4" />
-									{task.isArchived ? "Unarchive" : "Archive"}
+									{task.archivedAt ? "Unarchive" : "Archive"}
 								</DropdownMenuItem>
 							)}
 							{onMoveToTrash && !task.deletedAt && (

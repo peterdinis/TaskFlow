@@ -1,14 +1,14 @@
-import { useTasks } from "@/hooks/useTasks";
 import { FC, useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { motion } from "framer-motion";
 import { DashboardHeader } from "./DashboardHeader";
 import { DashboardStats } from "./DashboardStats";
-import { AddTaskButton } from "../todos/AddTaskButton";
 import { NotificationsModal } from "../modals/NotificationModal";
 import { useNotifications } from "@/context/NotificationContext";
 import { SearchModal } from "../modals/SearchModal";
-import { TaskList } from "../todos/TaskList";
+import { TodoList } from "../todos/TodoList";
+import { AddTodoButton } from "../todos/AddTodoButton";
+import { useTodos } from "@/hooks/useTodos";
 
 const DashboardWrapper: FC = () => {
 	const {
@@ -25,7 +25,7 @@ const DashboardWrapper: FC = () => {
 		updateTaskPriority,
 		taskCount,
 		labels,
-	} = useTasks();
+	} = useTodos();
 
 	const { unreadCount } = useNotifications();
 
@@ -79,7 +79,7 @@ const DashboardWrapper: FC = () => {
 							</p>
 						</div>
 
-						<TaskList
+						<TodoList
 							tasks={tasks}
 							onToggle={toggleTask}
 							onDelete={deleteTask}
@@ -92,7 +92,7 @@ const DashboardWrapper: FC = () => {
 				</div>
 			</motion.main>
 
-			<AddTaskButton
+			<AddTodoButton
 				onAdd={addTask}
 				projects={projects.map((p) => ({
 					id: p.id,

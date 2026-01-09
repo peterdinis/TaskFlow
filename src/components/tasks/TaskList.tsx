@@ -39,6 +39,9 @@ interface TaskListProps {
 	onToggle: (id: string) => void;
 	onDelete: (id: string) => void;
 	onUpdatePriority: (id: string, priority: Priority) => void;
+	onToggleFavorite?: (id: string) => void;
+	onToggleArchive?: (id: string) => void;
+	onMoveToTrash?: (id: string) => void;
 	projects?: Array<{ id: string; name: string; color: string }>;
 }
 
@@ -67,6 +70,9 @@ export function TaskList({
 	onToggle,
 	onDelete,
 	onUpdatePriority,
+	onToggleFavorite,
+	onToggleArchive,
+	onMoveToTrash,
 	projects = [],
 }: TaskListProps) {
 	const [filters, setFilters] = useState<FilterState>({
@@ -729,6 +735,19 @@ export function TaskList({
 											onDelete={() => onDelete(task.id)}
 											onUpdatePriority={(priority) =>
 												onUpdatePriority(task.id, priority)
+											}
+											onToggleFavorite={
+												onToggleFavorite
+													? () => onToggleFavorite(task.id)
+													: undefined
+											}
+											onToggleArchive={
+												onToggleArchive
+													? () => onToggleArchive(task.id)
+													: undefined
+											}
+											onMoveToTrash={
+												onMoveToTrash ? () => onMoveToTrash(task.id) : undefined
 											}
 										/>
 									</motion.div>

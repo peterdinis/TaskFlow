@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
 	X,
@@ -58,26 +58,39 @@ export function SearchModal({
 	];
 
 	// Filter tasks based on search query and filters
-	const filteredTasks = tasks.filter((task) => {
-		const queryLower = query.toLowerCase().trim();
-		const matchesSearch =
-			!queryLower ||
-			task.title.toLowerCase().includes(queryLower) ||
-			task.description?.toLowerCase().includes(queryLower) ||
-			task.tags?.some((tag: string) =>
-				tag.toLowerCase().includes(queryLower),
-			);
+	const filteredTasks = useMemo(() => {
+		if (!tasks || tasks.length === 0) {
+			return [];
+		}
 
-		const matchesCategory =
-			selectedCategory === "all" ||
-			(selectedCategory === "open" && !task.completed) ||
-			(selectedCategory === "completed" && task.completed);
+		return tasks.filter((task) => {
+			// Exclude archived and deleted tasks from search by default
+			if (task.isArchived || task.deletedAt) {
+				return false;
+			}
 
-		const matchesProject =
-			selectedProject === "all" || task.projectId === selectedProject;
+			const queryLower = query.toLowerCase().trim();
+			const taskTitle = task.title || "";
+			const taskDescription = task.description || "";
+			const taskTags = task.tags || [];
 
-		return matchesSearch && matchesCategory && matchesProject;
-	});
+			const matchesSearch =
+				!queryLower ||
+				taskTitle.toLowerCase().includes(queryLower) ||
+				taskDescription.toLowerCase().includes(queryLower) ||
+				taskTags.some((tag: string) => tag.toLowerCase().includes(queryLower));
+
+			const matchesCategory =
+				selectedCategory === "all" ||
+				(selectedCategory === "open" && !task.completed) ||
+				(selectedCategory === "completed" && task.completed);
+
+			const matchesProject =
+				selectedProject === "all" || task.projectId === selectedProject;
+
+			return matchesSearch && matchesCategory && matchesProject;
+		});
+	}, [tasks, query, selectedCategory, selectedProject]);
 
 	// Handle keyboard shortcuts
 	useEffect(() => {
@@ -335,17 +348,19 @@ export function SearchModal({
 																				"line-through text-muted-foreground",
 																		)}
 																	>
-																		{task.title}
+																		{task.title || "Untitled Task"}
 																	</h4>
-																	<Badge
-																		variant="outline"
-																		className={cn(
-																			"text-xs font-normal",
-																			getPriorityColor(task.priority),
-																		)}
-																	>
-																		{task.priority}
-																	</Badge>
+																	{task.priority && (
+																		<Badge
+																			variant="outline"
+																			className={cn(
+																				"text-xs font-normal",
+																				getPriorityColor(task.priority),
+																			)}
+																		>
+																			{task.priority}
+																		</Badge>
+																	)}
 																</div>
 
 																{task.description && (

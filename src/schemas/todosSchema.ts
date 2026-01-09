@@ -12,6 +12,8 @@ export const createTodoSchema = z.object({
 	dueDate: z.number().positive("Due date must be a positive timestamp"),
 	priority: z.number().min(0).max(10).optional(),
 	isCompleted: z.boolean().optional(),
+	isFavorite: z.boolean().optional(),
+	isArchived: z.boolean().optional(),
 	tags: z.array(z.string()).optional(),
 	embedding: z.array(z.number()).length(1536).optional(),
 });
@@ -23,6 +25,9 @@ export const updateTodoSchema = z.object({
 	dueDate: z.number().positive().optional(),
 	priority: z.number().min(0).max(10).optional(),
 	isCompleted: z.boolean().optional(),
+	isFavorite: z.boolean().optional(),
+	isArchived: z.boolean().optional(),
+	deletedAt: z.number().positive().optional(),
 	projectId: z.string().optional(),
 	labelId: z.string().optional(),
 	tags: z.array(z.string()).optional(),

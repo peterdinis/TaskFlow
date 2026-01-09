@@ -332,7 +332,7 @@ const RegisterForm: FC = () => {
 				{error && (
 					<div className="p-4 bg-red-50 border border-red-200 rounded-lg">
 						<div className="flex">
-							<div className="flex-shrink-0">
+							<div className="shrink-0">
 								<svg
 									className="h-5 w-5 text-red-400"
 									viewBox="0 0 20 20"

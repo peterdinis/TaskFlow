@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Task, Priority } from "@/types/task";
-import { TaskItem } from "./TaskItem";
 import {
 	Filter,
 	X,
@@ -33,8 +32,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { TodoItem } from "./TodoItem";
 
-interface TaskListProps {
+interface TodoListProps {
 	tasks: Task[];
 	onToggle: (id: string) => void;
 	onDelete: (id: string) => void;
@@ -65,7 +65,7 @@ interface FilterState {
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 25, 50, 100];
 
-export function TaskList({
+export function TodoList({
 	tasks,
 	onToggle,
 	onDelete,
@@ -74,7 +74,7 @@ export function TaskList({
 	onToggleArchive,
 	onMoveToTrash,
 	projects = [],
-}: TaskListProps) {
+}: TodoListProps) {
 	const [filters, setFilters] = useState<FilterState>({
 		type: "all",
 		priority: "all",
@@ -347,7 +347,7 @@ export function TaskList({
 									{activeFilters > 0 && (
 										<Badge
 											variant="secondary"
-											className="absolute -top-1 -right-1 px-1.5 min-w-[20px] h-5"
+											className="absolute -top-1 -right-1 px-1.5 min-w-5 h-5"
 										>
 											{activeFilters}
 										</Badge>
@@ -729,7 +729,7 @@ export function TaskList({
 											mass: 1,
 										}}
 									>
-										<TaskItem
+										<TodoItem
 											task={task}
 											onToggle={() => onToggle(task.id)}
 											onDelete={() => onDelete(task.id)}
@@ -785,7 +785,7 @@ export function TaskList({
 													mass: 1,
 												}}
 											>
-												<TaskItem
+												<TodoItem
 													task={task}
 													onToggle={() => onToggle(task.id)}
 													onDelete={() => onDelete(task.id)}

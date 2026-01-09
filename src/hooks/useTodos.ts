@@ -2,9 +2,9 @@ import { useTodo } from "@/context/TodoContext";
 import { Priority, Task, Project } from "@/types/task";
 import { useCallback } from "react";
 
-export function useTasks() {
+export function useTodos() {
 	const {
-		filteredTasks,
+		filteredTodos,
 		projects,
 		labels,
 		activeProject,
@@ -16,7 +16,7 @@ export function useTasks() {
 		moveToTrash,
 		deleteTodo,
 		updateTodo,
-		taskCount,
+		todoCount,
 	} = useTodo();
 
 	const addTask = useCallback(
@@ -33,7 +33,7 @@ export function useTasks() {
 				description: data.description,
 				projectId: data.projectId,
 				dueDate: data.dueDate?.getTime() || Date.now(),
-				priority: data.priority as any,
+				priority: data.priority,
 				tags: data.tags,
 			});
 		},
@@ -54,9 +54,28 @@ export function useTasks() {
 		return 0;
 	};
 
+	// Transform Todo[] to Task[]
+	const transformTodosToTasks = (todos: any[]): Task[] => {
+		return todos.map((todo) => ({
+			id: todo.id,
+			title: todo.title,
+			description: todo.description,
+			completed: todo.completed,
+			priority: todo.priority,
+			projectId: todo.projectId || "",
+			labelId: todo.labelId,
+			isFavorite: todo.isFavorite,
+			tags: todo.tags,
+			createdAt: todo.createdAt || new Date(),
+			dueDate: todo.dueDate,
+			archivedAt: todo.isArchived ? new Date() : undefined,
+			deletedAt: todo.deletedAt,
+		}));
+	};
+
 	return {
-		tasks: filteredTasks as unknown as Task[],
-		projects: projects as unknown as Project[],
+		tasks: transformTodosToTasks(filteredTodos),
+		projects: projects as Project[], // Cast to your Project type
 		labels,
 		activeProject,
 		setActiveProject,
@@ -67,6 +86,9 @@ export function useTasks() {
 		moveToTrash,
 		deleteTask: deleteTodo,
 		updateTaskPriority,
-		taskCount,
+		taskCount: {
+			total: todoCount.total,
+			completed: todoCount.completed,
+		},
 	};
 }

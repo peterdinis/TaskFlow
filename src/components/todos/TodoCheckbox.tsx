@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 import { Priority } from "@/types/task";
 import { cn } from "@/lib/utils";
 
-interface TaskCheckboxProps {
+interface TodoCheckboxProps {
 	checked: boolean;
 	priority: Priority;
 	onToggle: () => void;
@@ -23,11 +23,11 @@ const priorityCheckedColors = {
 	none: "bg-muted-foreground border-muted-foreground",
 };
 
-export function TaskCheckbox({
+export function TodoCheckbox({
 	checked,
 	priority,
 	onToggle,
-}: TaskCheckboxProps) {
+}: TodoCheckboxProps) {
 	return (
 		<motion.button
 			onClick={onToggle}

@@ -22,13 +22,10 @@ import {
 	LogIn,
 	User as UserIcon,
 	LogOut,
-	Bell as BellIcon,
 	Shield,
 	Crown,
 	CheckCircle,
-	Edit,
 	Download,
-	Upload,
 	Save,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -132,7 +129,7 @@ export function DashboardSidebar({
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 	const [showLoginDialog, setShowLoginDialog] = useState(false);
 	const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-	const [showProfileEdit, setShowProfileEdit] = useState(false);
+	const [, setShowProfileEdit] = useState(false);
 	const [archiveSearch, setArchiveSearch] = useState("");
 	const [archiveFilter, setArchiveFilter] = useState<
 		"all" | "completed" | "incomplete"
@@ -350,29 +347,6 @@ export function DashboardSidebar({
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
-	};
-
-	const handleImportData = () => {
-		const input = document.createElement("input");
-		input.type = "file";
-		input.accept = ".json";
-		input.onchange = (e) => {
-			const file = (e.target as HTMLInputElement).files?.[0];
-			if (file) {
-				const reader = new FileReader();
-				reader.onload = (event) => {
-					try {
-						const data = JSON.parse(event.target?.result as string);
-						console.log("Importing data:", data);
-						alert("Data imported successfully! Please refresh the page.");
-					} catch (error) {
-						alert("Failed to import data. Invalid file format.");
-					}
-				};
-				reader.readAsText(file);
-			}
-		};
-		input.click();
 	};
 
 	const handleSaveSettings = () => {
@@ -969,101 +943,6 @@ export function DashboardSidebar({
 
 					<div className="flex-1 overflow-y-auto pr-2">
 						<div className="space-y-6">
-							{/* Notification Settings */}
-							<div className="rounded-lg border border-border p-4">
-								<h3 className="font-medium text-lg mb-4 flex items-center gap-2">
-									<BellIcon className="w-5 h-5" />
-									Notifications
-								</h3>
-								<div className="space-y-4">
-									<div className="flex items-center justify-between">
-										<div>
-											<p className="font-medium">Task reminders</p>
-											<p className="text-sm text-muted-foreground">
-												Get notified about upcoming tasks
-											</p>
-										</div>
-										<Switch
-											checked={notificationSettings.taskReminders}
-											onCheckedChange={(checked) =>
-												setNotificationSettings((prev) => ({
-													...prev,
-													taskReminders: checked,
-												}))
-											}
-										/>
-									</div>
-									<div className="flex items-center justify-between">
-										<div>
-											<p className="font-medium">Project updates</p>
-											<p className="text-sm text-muted-foreground">
-												Notifications for project changes
-											</p>
-										</div>
-										<Switch
-											checked={notificationSettings.projectUpdates}
-											onCheckedChange={(checked) =>
-												setNotificationSettings((prev) => ({
-													...prev,
-													projectUpdates: checked,
-												}))
-											}
-										/>
-									</div>
-									<div className="flex items-center justify-between">
-										<div>
-											<p className="font-medium">Weekly reports</p>
-											<p className="text-sm text-muted-foreground">
-												Receive weekly progress reports
-											</p>
-										</div>
-										<Switch
-											checked={notificationSettings.weeklyReports}
-											onCheckedChange={(checked) =>
-												setNotificationSettings((prev) => ({
-													...prev,
-													weeklyReports: checked,
-												}))
-											}
-										/>
-									</div>
-									<div className="flex items-center justify-between">
-										<div>
-											<p className="font-medium">Due date notifications</p>
-											<p className="text-sm text-muted-foreground">
-												Get notified when tasks are due
-											</p>
-										</div>
-										<Switch
-											checked={notificationSettings.dueDateNotifications}
-											onCheckedChange={(checked) =>
-												setNotificationSettings((prev) => ({
-													...prev,
-													dueDateNotifications: checked,
-												}))
-											}
-										/>
-									</div>
-									<div className="flex items-center justify-between">
-										<div>
-											<p className="font-medium">Mention notifications</p>
-											<p className="text-sm text-muted-foreground">
-												Get notified when mentioned in comments
-											</p>
-										</div>
-										<Switch
-											checked={notificationSettings.mentionNotifications}
-											onCheckedChange={(checked) =>
-												setNotificationSettings((prev) => ({
-													...prev,
-													mentionNotifications: checked,
-												}))
-											}
-										/>
-									</div>
-								</div>
-							</div>
-
 							{/* Data Management */}
 							<div className="rounded-lg border border-border p-4">
 								<h3 className="font-medium text-lg mb-4 flex items-center gap-2">
@@ -1071,15 +950,6 @@ export function DashboardSidebar({
 									Data Management
 								</h3>
 								<div className="space-y-4">
-									<div className="flex items-center justify-between">
-										<div>
-											<p className="font-medium">Auto-save</p>
-											<p className="text-sm text-muted-foreground">
-												Automatically save changes
-											</p>
-										</div>
-										<Switch checked={autoSave} onCheckedChange={setAutoSave} />
-									</div>
 									<div className="space-y-3 pt-2">
 										<Button
 											variant="outline"
@@ -1088,14 +958,6 @@ export function DashboardSidebar({
 										>
 											<Download className="w-4 h-4" />
 											Export all data
-										</Button>
-										<Button
-											variant="outline"
-											onClick={handleImportData}
-											className="w-full justify-start gap-2"
-										>
-											<Upload className="w-4 h-4" />
-											Import data
 										</Button>
 										<Button
 											variant="outline"

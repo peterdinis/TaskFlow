@@ -11,7 +11,7 @@ import { api } from "../../convex/_generated/api";
 import { useAuth } from "./AuthContext";
 import { Id } from "../../convex/_generated/dataModel";
 
-interface Task {
+interface Todo {
 	id: string;
 	title: string;
 	description?: string;
@@ -42,7 +42,7 @@ interface Label {
 }
 
 interface TodoContextType {
-	tasks: Task[];
+	todos: Todo[];
 	projects: Project[];
 	labels: Label[];
 	isLoading: boolean;
@@ -57,7 +57,7 @@ interface TodoContextType {
 		labelId?: string;
 		tags?: string[];
 		dueDate: number;
-		priority?: Task["priority"];
+		priority?: Todo["priority"];
 	}) => Promise<string>;
 	updateTodo: (id: string, updates: any) => Promise<void>;
 	toggleTodo: (id: string) => Promise<void>;
@@ -85,8 +85,8 @@ interface TodoContextType {
 	}) => Promise<string>;
 
 	// Derived state
-	filteredTasks: Task[];
-	taskCount: {
+	filteredTodos: Todo[];
+	todoCount: {
 		total: number;
 		completed: number;
 	};
@@ -99,7 +99,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 	const [activeProject, setActiveProject] = useState<string>("inbox");
 
 	// Queries
-	const rawTasks = useQuery(
+	const rawTodos = useQuery(
 		api.todos.getTodosByUser,
 		user ? { userId: user.id as Id<"users"> } : "skip",
 	);
@@ -129,15 +129,15 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 
 	const createLabelMutation = useMutation(api.labels.createLabel);
 
-	const [tasks, setTasks] = useState<Task[]>([]);
+	const [todos, setTodos] = useState<Todo[]>([]);
 	const [projects, setProjects] = useState<Project[]>([]);
 	const [labels, setLabels] = useState<Label[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		if (rawTasks && rawProjects && rawLabels) {
-			// Map Convex todos to Task interface
-			const mappedTasks: Task[] = rawTasks.map((t) => ({
+		if (rawTodos && rawProjects && rawLabels) {
+			// Map Convex todos to Todo interface
+			const mappedTodos: Todo[] = rawTodos.map((t) => ({
 				id: t._id,
 				title: t.taskName,
 				description: t.description,
@@ -151,7 +151,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 				isArchived: t.isArchived ?? false,
 				deletedAt: t.deletedAt ? new Date(t.deletedAt) : undefined,
 			}));
-			setTasks(mappedTasks);
+			setTodos(mappedTodos);
 
 			// Map Convex projects
 			const mappedProjects: Project[] = rawProjects.map((p) => ({
@@ -173,45 +173,45 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 
 			setIsLoading(false);
 		} else if (
-			rawTasks === null ||
+			rawTodos === null ||
 			rawProjects === null ||
 			rawLabels === null
 		) {
 			setIsLoading(false);
 		}
-	}, [rawTasks, rawProjects, rawLabels]);
+	}, [rawTodos, rawProjects, rawLabels]);
 
-	const mapPriority = (p?: number): Task["priority"] => {
+	const mapPriority = (p?: number): Todo["priority"] => {
 		if (p === 3) return "high";
 		if (p === 2) return "medium";
 		if (p === 1) return "low";
 		return "none";
 	};
 
-	const reversePriority = (p: Task["priority"]): number => {
+	const reversePriority = (p: Todo["priority"]): number => {
 		if (p === "high") return 3;
 		if (p === "medium") return 2;
 		if (p === "low") return 1;
 		return 0;
 	};
 
-	const filteredTasks = useMemo(() => {
-		return tasks.filter((task) => {
+	const filteredTodos = useMemo(() => {
+		return todos.filter((todo) => {
 			if (activeProject === "inbox") return true;
 			if (activeProject === "today") {
 				const today = new Date();
-				return task.dueDate?.toDateString() === today.toDateString();
+				return todo.dueDate?.toDateString() === today.toDateString();
 			}
-			return task.projectId === activeProject;
+			return todo.projectId === activeProject;
 		});
-	}, [tasks, activeProject]);
+	}, [todos, activeProject]);
 
-	const taskCount = useMemo(() => {
+	const todoCount = useMemo(() => {
 		return {
-			total: filteredTasks.length,
-			completed: filteredTasks.filter((t) => t.completed).length,
+			total: filteredTodos.length,
+			completed: filteredTodos.filter((t) => t.completed).length,
 		};
-	}, [filteredTasks]);
+	}, [filteredTodos]);
 
 	// Actions
 	const addTodo = async (data: {
@@ -221,7 +221,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 		labelId?: string;
 		tags?: string[];
 		dueDate: number;
-		priority?: Task["priority"];
+		priority?: Todo["priority"];
 	}) => {
 		if (!user) throw new Error("Not authenticated");
 		return await createTodoMutation({
@@ -305,7 +305,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 	};
 
 	const value = {
-		tasks,
+		todos,
 		projects,
 		labels,
 		isLoading,
@@ -324,8 +324,8 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 		updateProject,
 		deleteProject,
 		addLabel,
-		filteredTasks,
-		taskCount,
+		filteredTodos,
+		todoCount,
 	};
 
 	return <TodoContext.Provider value={value}>{children}</TodoContext.Provider>;

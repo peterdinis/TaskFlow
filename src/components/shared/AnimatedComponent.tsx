@@ -21,7 +21,7 @@ export function AnimatedLoader() {
 	}, []);
 
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-primary/5">
+		<div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-background via-background to-primary/5">
 			{/* Animated Logo */}
 			<motion.div
 				initial={{ scale: 0, rotate: -180 }}
@@ -34,7 +34,7 @@ export function AnimatedLoader() {
 				}}
 				className="relative mb-8"
 			>
-				<div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary via-primary/80 to-primary/60 flex items-center justify-center shadow-2xl">
+				<div className="w-32 h-32 rounded-2xl bg-linear-to-br from-primary via-primary/80 to-primary/60 flex items-center justify-center shadow-2xl">
 					<motion.div
 						animate={{
 							scale: [1, 1.1, 1],
@@ -98,7 +98,7 @@ export function AnimatedLoader() {
 						initial={{ width: "0%" }}
 						animate={{ width: `${progress}%` }}
 						transition={{ type: "spring", stiffness: 100 }}
-						className="h-full bg-gradient-to-r from-primary via-primary/80 to-primary/60 rounded-full"
+						className="h-full bg-linear-to-r from-primary via-primary/80 to-primary/60 rounded-full"
 					/>
 				</div>
 			</div>

@@ -56,7 +56,7 @@ export function useTodos() {
 
 	// Transform Todo[] to Task[]
 	const transformTodosToTasks = (todos: any[]): Task[] => {
-		return todos.map(todo => ({
+		return todos.map((todo) => ({
 			id: todo.id,
 			title: todo.title,
 			description: todo.description,

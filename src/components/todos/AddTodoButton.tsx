@@ -22,7 +22,7 @@ import {
 import { format } from "date-fns";
 import { useNotifications } from "@/context/NotificationContext";
 
-interface AddTaskButtonProps {
+interface AddTodoButtonProps {
 	onAdd: (data: any) => void;
 	projects?: Array<{ id: string; name: string; color: string }>;
 	tags?: string[];
@@ -46,12 +46,12 @@ const priorityOptions: {
 	{ value: "none", label: "No Priority", color: "bg-muted", icon: "⚪" },
 ];
 
-export function AddTaskButton({
+export function AddTodoButton({
 	onAdd,
 	projects = [],
 	tags = [],
 	defaultProject,
-}: AddTaskButtonProps) {
+}: AddTodoButtonProps) {
 	const { createNotification } = useNotifications();
 	const [isOpen, setIsOpen] = useState(false);
 	const [isExpanded, setIsExpanded] = useState(false);

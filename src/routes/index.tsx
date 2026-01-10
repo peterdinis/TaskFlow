@@ -5,4 +5,5 @@ import { HomeWrapper } from "@/components/home/HomeWrapper";
 export const Route = createFileRoute("/")({
 	component: HomeWrapper,
 	pendingComponent: PendingComponent,
+	ssr: false
 });

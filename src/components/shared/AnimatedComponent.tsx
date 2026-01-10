@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { Kbd } from "../ui/kbd";
 
 export function AnimatedLoader() {
 	const [progress, setProgress] = useState(0);
@@ -136,8 +137,8 @@ export function AnimatedLoader() {
 				className="mt-12 text-xs text-muted-foreground text-center"
 			>
 				<p>
-					Press <kbd className="px-2 py-1 mx-1 rounded bg-muted">Ctrl</kbd> +
-					<kbd className="px-2 py-1 mx-1 rounded bg-muted">K</kbd> to search
+					Press <Kbd className="px-2 py-1 mx-1 rounded bg-muted">Ctrl</Kbd> +
+					<Kbd className="px-2 py-1 mx-1 rounded bg-muted">K</Kbd> to search
 					tasks
 				</p>
 			</motion.div>

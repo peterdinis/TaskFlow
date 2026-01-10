@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "next-themes";
+import { Empty, EmptyContent } from "../ui/empty";
 
 interface DashboardSidebarProps {
 	projects: Project[];
@@ -1103,7 +1104,7 @@ export function DashboardSidebar({
 																	className={cn(
 																		"font-medium text-foreground line-clamp-1 flex-1",
 																		task.completed &&
-																			"line-through text-muted-foreground",
+																		"line-through text-muted-foreground",
 																	)}
 																>
 																	{task.title}
@@ -1278,21 +1279,25 @@ export function DashboardSidebar({
 						</div>
 
 						{filteredArchivedTasks.length === 0 ? (
-							<div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
-								<div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-4">
-									<Archive className="w-10 h-10 text-muted-foreground" />
-								</div>
-								<h3 className="text-lg font-medium text-foreground mb-2">
-									{archivedTasks.length === 0
-										? "Archive is empty"
-										: "No tasks found"}
-								</h3>
-								<p className="text-muted-foreground text-sm max-w-sm">
-									{archivedTasks.length === 0
-										? "Archive tasks to keep them organized without cluttering your main view"
-										: "Try adjusting your search or filters"}
-								</p>
-							</div>
+							<Empty>
+								<EmptyContent>
+									<div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
+										<div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+											<Archive className="w-10 h-10 text-muted-foreground" />
+										</div>
+										<h3 className="text-lg font-medium text-foreground mb-2">
+											{archivedTasks.length === 0
+												? "Archive is empty"
+												: "No tasks found"}
+										</h3>
+										<p className="text-muted-foreground text-sm max-w-sm">
+											{archivedTasks.length === 0
+												? "Archive tasks to keep them organized without cluttering your main view"
+												: "Try adjusting your search or filters"}
+										</p>
+									</div>
+								</EmptyContent>
+							</Empty>
 						) : (
 							<>
 								<div className="flex-1 overflow-y-auto pr-2">
@@ -1319,7 +1324,7 @@ export function DashboardSidebar({
 																	className={cn(
 																		"font-medium text-foreground line-clamp-1",
 																		task.completed &&
-																			"line-through text-muted-foreground",
+																		"line-through text-muted-foreground",
 																	)}
 																>
 																	{task.title}

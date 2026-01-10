@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { useNotifications } from "@/context/NotificationContext";
+import { Kbd } from "../ui/kbd";
 
 interface AddTodoButtonProps {
 	onAdd: (data: any) => void;
@@ -515,16 +516,16 @@ export function AddTodoButton({
 								<div className="flex items-center justify-between">
 									<span>
 										Press{" "}
-										<kbd className="px-1.5 py-0.5 rounded bg-muted mx-1">
+										<Kbd className="px-1.5 py-0.5 rounded bg-muted mx-1">
 											Tab
-										</kbd>{" "}
+										</Kbd>{" "}
 										for more options
 									</span>
 									<span>
 										Press{" "}
-										<kbd className="px-1.5 py-0.5 rounded bg-muted mx-1">
+										<Kbd className="px-1.5 py-0.5 rounded bg-muted mx-1">
 											⌘⏎
-										</kbd>{" "}
+										</Kbd>{" "}
 										to save
 									</span>
 								</div>

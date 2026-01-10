@@ -22,6 +22,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Kbd } from "../ui/kbd";
 
 interface SearchModalProps {
 	isOpen: boolean;
@@ -455,27 +456,27 @@ export function SearchModal({
 										</p>
 										<div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
 											<div className="flex items-center gap-1">
-												<kbd className="px-2 py-1 rounded bg-muted font-mono">
+												<Kbd className="px-2 py-1 rounded bg-muted font-mono">
 													Ctrl
-												</kbd>
-												<kbd className="px-2 py-1 rounded bg-muted font-mono">
+												</Kbd>
+												<Kbd className="px-2 py-1 rounded bg-muted font-mono">
 													K
-												</kbd>
+												</Kbd>
 												<span>to open</span>
 											</div>
 											<div className="flex items-center gap-1">
-												<kbd className="px-2 py-1 rounded bg-muted font-mono">
+												<Kbd className="px-2 py-1 rounded bg-muted font-mono">
 													Esc
-												</kbd>
+												</Kbd>
 												<span>to close</span>
 											</div>
 											<div className="flex items-center gap-1">
-												<kbd className="px-2 py-1 rounded bg-muted font-mono">
+												<Kbd className="px-2 py-1 rounded bg-muted font-mono">
 													↓
-												</kbd>
-												<kbd className="px-2 py-1 rounded bg-muted font-mono">
+												</Kbd>
+												<Kbd className="px-2 py-1 rounded bg-muted font-mono">
 													↑
-												</kbd>
+												</Kbd>
 												<span>to navigate</span>
 											</div>
 										</div>
@@ -489,9 +490,9 @@ export function SearchModal({
 									{query && filteredTasks.length > 0 && (
 										<span>
 											Press{" "}
-											<kbd className="mx-1 px-1.5 py-0.5 rounded bg-muted">
+											<Kbd className="mx-1 px-1.5 py-0.5 rounded bg-muted">
 												Enter
-											</kbd>
+											</Kbd>
 											to select highlighted task
 										</span>
 									)}

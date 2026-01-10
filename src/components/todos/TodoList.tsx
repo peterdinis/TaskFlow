@@ -33,6 +33,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { TodoItem } from "./TodoItem";
+import { Empty, EmptyContent } from "../ui/empty";
 
 interface TodoListProps {
 	tasks: Task[];
@@ -690,17 +691,21 @@ export function TodoList({
 							exit={{ opacity: 0, y: -20 }}
 							className="py-12 text-center space-y-3"
 						>
-							<div className="mx-auto w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center">
-								<AlertCircle className="w-8 h-8 text-muted-foreground" />
-							</div>
-							<div>
-								<p className="text-foreground font-medium">No tasks found</p>
-								<p className="text-sm text-muted-foreground mt-1">
-									{tasks.length === 0
-										? "Add your first task to get started!"
-										: "Try adjusting your filters"}
-								</p>
-							</div>
+							<Empty>
+								<EmptyContent>
+									<div className="mx-auto w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center">
+										<AlertCircle className="w-8 h-8 text-muted-foreground" />
+									</div>
+									<div>
+										<p className="text-foreground font-medium">No tasks found</p>
+										<p className="text-sm text-muted-foreground mt-1">
+											{tasks.length === 0
+												? "Add your first task to get started!"
+												: "Try adjusting your filters"}
+										</p>
+									</div>
+								</EmptyContent>
+							</Empty>
 							{activeFilters > 0 && (
 								<Button variant="outline" size="sm" onClick={clearFilters}>
 									Clear filters

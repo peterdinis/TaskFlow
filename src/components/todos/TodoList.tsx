@@ -697,7 +697,9 @@ export function TodoList({
 										<AlertCircle className="w-8 h-8 text-muted-foreground" />
 									</div>
 									<div>
-										<p className="text-foreground font-medium">No tasks found</p>
+										<p className="text-foreground font-medium">
+											No tasks found
+										</p>
 										<p className="text-sm text-muted-foreground mt-1">
 											{tasks.length === 0
 												? "Add your first task to get started!"

@@ -1104,7 +1104,7 @@ export function DashboardSidebar({
 																	className={cn(
 																		"font-medium text-foreground line-clamp-1 flex-1",
 																		task.completed &&
-																		"line-through text-muted-foreground",
+																			"line-through text-muted-foreground",
 																	)}
 																>
 																	{task.title}
@@ -1324,7 +1324,7 @@ export function DashboardSidebar({
 																	className={cn(
 																		"font-medium text-foreground line-clamp-1",
 																		task.completed &&
-																		"line-through text-muted-foreground",
+																			"line-through text-muted-foreground",
 																	)}
 																>
 																	{task.title}

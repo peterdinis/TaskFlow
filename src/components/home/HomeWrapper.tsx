@@ -4,7 +4,6 @@ import {
 	ArrowRight,
 	Sparkles,
 	Target,
-	Play,
 	Menu,
 	X,
 	Users,
@@ -171,26 +170,6 @@ export function HomeWrapper() {
 							one place. Keep everything in sync across your entire
 							organization.
 						</p>
-
-						<div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-							<Button
-								size="lg"
-								onClick={handleGetStarted}
-								className="px-8 py-6 text-lg gap-3"
-							>
-								Start for free
-								<ArrowRight className="w-5 h-5" />
-							</Button>
-							<Button
-								size="lg"
-								variant="outline"
-								className="px-8 py-6 text-lg gap-3"
-								onClick={() => scrollToSection("features")}
-							>
-								<Play className="w-5 h-5" />
-								Watch demo
-							</Button>
-						</div>
 
 						{/* Hero image/illustration */}
 						<div className="relative mx-auto max-w-4xl">

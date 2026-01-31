@@ -1,4 +1,3 @@
-
 import { Navigate } from "@tanstack/react-router";
 import { ReactNode } from "react";
 import { AnimatedLoader } from "@/components/shared/AnimatedComponent";
